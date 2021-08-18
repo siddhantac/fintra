@@ -8,9 +8,9 @@ import (
 )
 
 type CreateTransactionRequest struct {
-	Amount      int    `json:"amount"`
-	Type        string `json:"type"`
-	Currency    string `json:"currency"`
+	Amount int    `json:"amount"`
+	Type   string `json:"type"`
+	// Currency    string `json:"currency"`
 	Description string `json:"description"`
 	Date        string `json:"date"`
 	Category    string `json:"category"`
@@ -44,7 +44,7 @@ func CreateTransaction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	layout := "2006-01-02 15:04"
+	layout := "2006-01-02"
 	date, err := time.Parse(layout, ctr.Date)
 	if err != nil {
 		log.Println(err)
@@ -59,7 +59,6 @@ func CreateTransaction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println(transaction)
 	resp := TransactionResponse{
 		Amount:      transaction.Amount,
 		Type:        string(transaction.Type),
