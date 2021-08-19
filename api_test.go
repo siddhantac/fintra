@@ -1,29 +1,73 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCreateTransaction(t *testing.T) {
-	body := `{
-		"amount": 23,
-		"type": "expense",
-		"description": "dinner",
-		"date": "2021-08-17",
-		"category": "meals",
-		"is_debit": true,
-		"account": "axis bank"
-	}`
 
-	r := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(body))
-	w := httptest.NewRecorder()
+	tests := map[string]struct {
+		reqBody      string
+		wantCode     int
+		wantRespBody string
+	}{
+		"valid expense request": {
+			reqBody: `{
+				"amount": 23,
+				"type": "expense",
+				"description": "dinner",
+				"date": "2021-08-17",
+				"category": "meals",
+				"is_debit": true,
+				"account": "axis bank"
+			}`,
+			wantCode: http.StatusOK,
+			wantRespBody: `{
+				"amount": 23,
+				"type": "expense",
+				"description": "dinner",
+				"date": "2021-08-17",
+				"category": "meals",
+				"is_debit": true,
+				"account": "axis bank"
+			}`,
+		},
+		"invalid json": {
+			reqBody: `{
+				"amount": 23,
+			}`,
+			wantCode:     http.StatusBadRequest,
+			wantRespBody: `{"error": "invalid JSON"}`,
+		},
+		"invalid request": {
+			reqBody: `{
+				"amount": 23,
+				"type": "income",
+				"description": "dinner",
+				"date": "2021-08-17",
+				"category": "meals",
+				"is_debit": true,
+				"account": "axis bank"
+			}`,
+			wantCode:     http.StatusBadRequest,
+			wantRespBody: `{"error": "income must be credit"}`,
+		},
+	}
 
-	CreateTransaction(w, r)
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			r := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(test.reqBody))
+			w := httptest.NewRecorder()
 
-	fmt.Println(w.Code)
-	fmt.Println(string(w.Body.Bytes()))
+			CreateTransaction(w, r)
+
+			assert.Equal(t, test.wantCode, w.Code)
+			assert.JSONEq(t, test.wantRespBody, string(w.Body.Bytes()))
+		})
+	}
 }
