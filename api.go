@@ -47,6 +47,10 @@ type Repository interface {
 	Get(string) *Transaction
 }
 
+type IDGenerator interface {
+	NewID() string
+}
+
 func GetTransaction(repo Repository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := strings.TrimPrefix(r.URL.Path, "/transactions/")
@@ -65,7 +69,7 @@ func GetTransaction(repo Repository) func(w http.ResponseWriter, r *http.Request
 	}
 }
 
-func CreateTransaction(repo Repository) func(w http.ResponseWriter, r *http.Request) {
+func CreateTransaction(repo Repository, idGenerator IDGenerator) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var ctr CreateTransactionRequest
 		if err := json.NewDecoder(r.Body).Decode(&ctr); err != nil {
@@ -87,6 +91,7 @@ func CreateTransaction(repo Repository) func(w http.ResponseWriter, r *http.Requ
 			http.Error(w, newErrorResponse(err.Error()), http.StatusBadRequest)
 			return
 		}
+		transaction.ID = idGenerator.NewID()
 
 		resp := newTransactionResponse(transaction)
 		w.WriteHeader(http.StatusOK)

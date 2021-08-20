@@ -10,6 +10,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+type mockIDGenerator struct {
+}
+
+func (mockIDGenerator) NewID() string {
+	return "1"
+}
+
 func TestGetTransaction(t *testing.T) {
 	tests := map[string]struct {
 		wantCode     int
@@ -67,6 +74,7 @@ func TestCreateTransaction(t *testing.T) {
 	}{
 		"valid expense request": {
 			reqBody: `{
+				"id": "1",
 				"amount": 23,
 				"type": "expense",
 				"description": "dinner",
@@ -77,6 +85,7 @@ func TestCreateTransaction(t *testing.T) {
 			}`,
 			wantCode: http.StatusOK,
 			wantRespBody: `{
+				"id": "1",
 				"amount": 23,
 				"type": "expense",
 				"description": "dinner",
@@ -113,8 +122,7 @@ func TestCreateTransaction(t *testing.T) {
 			r := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(test.reqBody))
 			w := httptest.NewRecorder()
 
-			mockRepo := &MemStore{}
-			handler := CreateTransaction(mockRepo)
+			handler := CreateTransaction(&MemStore{}, mockIDGenerator{})
 			handler(w, r)
 
 			assert.Equal(t, test.wantCode, w.Code)
