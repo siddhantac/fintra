@@ -3,10 +3,12 @@ package main
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"time"
 )
 
 type Transaction struct {
+	ID          string
 	Amount      int
 	Type        TransactionType
 	Currency    Currency
@@ -29,10 +31,10 @@ const (
 )
 
 var transactionTypes = map[TransactionType]struct{}{
-	TrTypeExpense:    struct{}{},
-	TrTypeIncome:     struct{}{},
-	TrTypeTransfer:   struct{}{},
-	TrTypeInvestment: struct{}{},
+	TrTypeExpense:    {},
+	TrTypeIncome:     {},
+	TrTypeTransfer:   {},
+	TrTypeInvestment: {},
 }
 
 type Currency string
@@ -128,6 +130,7 @@ func NewTransaction(amount int, date time.Time, isDebit bool, category, transact
 	now := time.Now()
 	tr := &Transaction{
 		Type:        TransactionType(transactionType),
+		ID:          strconv.Itoa(time.Now().Nanosecond()),
 		Amount:      amount,
 		Category:    TransactionCategory(category),
 		Date:        date,

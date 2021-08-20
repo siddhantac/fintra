@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -19,6 +20,7 @@ type CreateTransactionRequest struct {
 }
 
 type TransactionResponse struct {
+	ID     string `json:"id"`
 	Amount int    `json:"amount"`
 	Type   string `json:"type"`
 	// Currency    string `json:"currency"`
@@ -40,44 +42,58 @@ func NewTime(t time.Time) Time {
 	return Time(t.Round(time.Second).In(time.UTC).Format(dateLayout))
 }
 
-func CreateTransaction(w http.ResponseWriter, r *http.Request) {
-	var ctr CreateTransactionRequest
-	if err := json.NewDecoder(r.Body).Decode(&ctr); err != nil {
-		log.Println(err)
-		http.Error(w, newErrorResponse("invalid JSON"), http.StatusBadRequest)
-		return
-	}
+type Repository interface {
+	Insert(*Transaction)
+	Get(string) *Transaction
+}
 
-	date, err := time.Parse(dateLayout, ctr.Date)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, "invalid date", http.StatusBadRequest)
-		return
-	}
+func GetTransaction(repo Repository) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := strings.TrimPrefix(r.URL.Path, "/transactions/")
+		transaction := repo.Get(id)
+		if transaction == nil {
+			http.Error(w, "not found", http.StatusNotFound)
+			return
+		}
 
-	transaction, err := NewTransaction(ctr.Amount, date, ctr.IsDebit, ctr.Category, ctr.Type, ctr.Description, ctr.Account)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, newErrorResponse(err.Error()), http.StatusBadRequest)
-		return
+		resp := newTransactionResponse(transaction)
+		w.WriteHeader(http.StatusOK)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Println(err)
+			http.Error(w, "internal error", http.StatusInternalServerError)
+		}
 	}
+}
 
-	resp := TransactionResponse{
-		Amount: transaction.Amount,
-		Type:   string(transaction.Type),
-		// Currency:    string(transaction.Currency),
-		Description: transaction.Description,
-		Date:        NewTime(transaction.Date),
-		Category:    string(transaction.Category),
-		IsDebit:     transaction.IsDebit,
-		Account:     transaction.Account,
-		// Created:     NewTime(transaction.Created),
-	}
+func CreateTransaction(repo Repository) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var ctr CreateTransactionRequest
+		if err := json.NewDecoder(r.Body).Decode(&ctr); err != nil {
+			log.Println(err)
+			http.Error(w, newErrorResponse("invalid JSON"), http.StatusBadRequest)
+			return
+		}
 
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Println(err)
-		http.Error(w, "internal error", http.StatusInternalServerError)
+		date, err := time.Parse(dateLayout, ctr.Date)
+		if err != nil {
+			log.Println(err)
+			http.Error(w, "invalid date", http.StatusBadRequest)
+			return
+		}
+
+		transaction, err := NewTransaction(ctr.Amount, date, ctr.IsDebit, ctr.Category, ctr.Type, ctr.Description, ctr.Account)
+		if err != nil {
+			log.Println(err)
+			http.Error(w, newErrorResponse(err.Error()), http.StatusBadRequest)
+			return
+		}
+
+		resp := newTransactionResponse(transaction)
+		w.WriteHeader(http.StatusOK)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Println(err)
+			http.Error(w, "internal error", http.StatusInternalServerError)
+		}
 	}
 }
 
@@ -93,4 +109,19 @@ func newErrorResponse(msg string) string {
 		return "internal error"
 	}
 	return string(b)
+}
+
+func newTransactionResponse(t *Transaction) TransactionResponse {
+	return TransactionResponse{
+		ID:     t.ID,
+		Amount: t.Amount,
+		Type:   string(t.Type),
+		// Currency:    string(transaction.Currency),
+		Description: t.Description,
+		Date:        NewTime(t.Date),
+		Category:    string(t.Category),
+		IsDebit:     t.IsDebit,
+		Account:     t.Account,
+		// Created:     NewTime(transaction.Created),
+	}
 }
