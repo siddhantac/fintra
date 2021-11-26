@@ -1,6 +1,8 @@
 package main
 
-import "sync"
+import (
+	"sync"
+)
 
 type MemStore struct {
 	inited       bool
@@ -35,4 +37,14 @@ func (ms *MemStore) Get(id string) *Transaction {
 	ms.mtx.Lock()
 	defer ms.mtx.Unlock()
 	return ms.transactions[id]
+}
+
+func (ms *MemStore) GetAll() []*Transaction {
+	ms.mtx.Lock()
+	defer ms.mtx.Unlock()
+	allTx := make([]*Transaction, 0, len(ms.transactions))
+	for _, tx := range ms.transactions {
+		allTx = append(allTx, tx)
+	}
+	return allTx
 }

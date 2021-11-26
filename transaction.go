@@ -22,6 +22,7 @@ type Transaction struct {
 
 type TransactionType string
 
+// TODO: type maybe unnecessary
 const (
 	TrTypeExpense    TransactionType = "expense"
 	TrTypeIncome     TransactionType = "income"
@@ -127,7 +128,9 @@ func validateType(ty TransactionType, isDebit bool) error {
 
 func NewTransaction(amount int, date time.Time, isDebit bool, category, transactionType, description, account string) (*Transaction, error) {
 	now := time.Now()
+	id := fmt.Sprintf("%d", now.Nanosecond())
 	tr := &Transaction{
+		ID:          id,
 		Type:        TransactionType(transactionType),
 		Amount:      amount,
 		Category:    TransactionCategory(category),
@@ -145,3 +148,21 @@ func NewTransaction(amount int, date time.Time, isDebit bool, category, transact
 
 	return tr, nil
 }
+
+/*
+func (t *Transaction) String() string {
+	var s string
+	fmt.Sprintf("")
+}
+	ID          string
+	Amount      int
+	Type        TransactionType
+	Currency    Currency
+	Description string
+	Date        time.Time
+	Category    TransactionCategory
+	IsDebit     bool
+	Account     string // TODO use strongly typed accounts
+	Created     time.Time
+	Updated     time.Time
+*/
