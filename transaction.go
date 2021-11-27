@@ -20,6 +20,45 @@ type Transaction struct {
 	Updated     time.Time
 }
 
+func NewTransaction(amount int, date time.Time, isDebit bool, category, transactionType, description, account string) (*Transaction, error) {
+	now := time.Now()
+	tr := &Transaction{
+		ID:          NewID(),
+		Type:        TransactionType(transactionType),
+		Amount:      amount,
+		Category:    TransactionCategory(category),
+		Date:        date,
+		IsDebit:     isDebit,
+		Description: description,
+		Currency:    DefaultCurrency,
+		Account:     account,
+		Created:     now,
+	}
+
+	if err := tr.validate(); err != nil {
+		return nil, err
+	}
+
+	return tr, nil
+}
+
+func (t *Transaction) String() string {
+	return fmt.Sprintf("%s\t%-10s\t%d\t%s\t%s(%s)", t.Date.Format("02 Jan 2006"), t.Description, t.Amount, t.Account, t.Category, t.Type)
+
+}
+
+// ID          string
+// Amount      int
+// Type        TransactionType
+// Currency    Currency
+// Description string
+// Date        time.Time
+// Category    TransactionCategory
+// IsDebit     bool
+// Account     string // TODO use strongly typed accounts
+// Created     time.Time
+// Updated     time.Time
+
 type TransactionType string
 
 // TODO: type maybe unnecessary
@@ -125,44 +164,3 @@ func validateType(ty TransactionType, isDebit bool) error {
 	}
 	return nil
 }
-
-func NewTransaction(amount int, date time.Time, isDebit bool, category, transactionType, description, account string) (*Transaction, error) {
-	now := time.Now()
-	id := fmt.Sprintf("%d", now.Nanosecond())
-	tr := &Transaction{
-		ID:          id,
-		Type:        TransactionType(transactionType),
-		Amount:      amount,
-		Category:    TransactionCategory(category),
-		Date:        date,
-		IsDebit:     isDebit,
-		Description: description,
-		Currency:    DefaultCurrency,
-		Account:     account,
-		Created:     now,
-	}
-
-	if err := tr.validate(); err != nil {
-		return nil, err
-	}
-
-	return tr, nil
-}
-
-/*
-func (t *Transaction) String() string {
-	var s string
-	fmt.Sprintf("")
-}
-	ID          string
-	Amount      int
-	Type        TransactionType
-	Currency    Currency
-	Description string
-	Date        time.Time
-	Category    TransactionCategory
-	IsDebit     bool
-	Account     string // TODO use strongly typed accounts
-	Created     time.Time
-	Updated     time.Time
-*/

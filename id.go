@@ -1,12 +1,9 @@
 package main
 
 import (
-	"strconv"
-	"time"
+	"github.com/segmentio/ksuid"
 )
 
-type IDGeneratorImpl struct{}
-
-func (IDGeneratorImpl) NewID() string {
-	return strconv.Itoa(time.Now().Nanosecond())
+func NewID() string {
+	return ksuid.New().String()
 }
