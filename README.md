@@ -8,18 +8,23 @@
 
 ## Phase 0
 - [ ] bank account
-    - [ ] starting balance
-    - [ ] current balance
+    - [x] starting balance
+    - [x] current balance
 - [ ] 2 categories + savings
 - [ ] overview of the whole system (status report)
     - [x]show a table with all transactions
-    - [ ]AND, final balance of the account
-- [ ] in-memory storage
+- [ ] in-memory storage for transactions
 - [ ] API methods:
 	- [x] create new transaction
 	- [x] get all transactions
 
 ## Phase 1
+- [ ] repository layer
+    - [ ] account repo (cols: txn id, txn amt, running balance)
+    - [ ] transactions repo
+    - [ ] categories repo
+
+## Phase 2
 * file based storage (json)
 * API methods:
 	* set starting balance
