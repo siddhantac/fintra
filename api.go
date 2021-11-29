@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/siddhantac/fintra/domain"
 )
 
 type CreateTransactionRequest struct {
@@ -43,8 +45,8 @@ func NewTime(t time.Time) Time {
 }
 
 type Repository interface {
-	Insert(*Transaction)
-	Get(string) *Transaction
+	Insert(*domain.Transaction)
+	Get(string) *domain.Transaction
 }
 
 type IDGenerator interface {
@@ -85,7 +87,7 @@ func CreateTransaction(repo Repository, idGenerator IDGenerator) func(w http.Res
 			return
 		}
 
-		transaction, err := NewTransaction(ctr.Amount, date, ctr.IsDebit, ctr.Category, ctr.Type, ctr.Description, ctr.Account)
+		transaction, err := domain.NewTransaction(ctr.Amount, date, ctr.IsDebit, ctr.Category, ctr.Type, ctr.Description, ctr.Account)
 		if err != nil {
 			log.Println(err)
 			http.Error(w, newErrorResponse(err.Error()), http.StatusBadRequest)
@@ -116,7 +118,7 @@ func newErrorResponse(msg string) string {
 	return string(b)
 }
 
-func newTransactionResponse(t *Transaction) TransactionResponse {
+func newTransactionResponse(t *domain.Transaction) TransactionResponse {
 	return TransactionResponse{
 		ID:     t.ID,
 		Amount: t.Amount,

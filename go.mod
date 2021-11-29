@@ -1,4 +1,4 @@
-module github.com/sidc9/fintra
+module github.com/siddhantac/fintra
 
 go 1.16
 

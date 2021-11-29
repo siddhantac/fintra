@@ -1,9 +1,11 @@
-package main
+package domain
 
 import (
 	"errors"
 	"fmt"
 	"time"
+
+	"github.com/segmentio/ksuid"
 )
 
 type Transaction struct {
@@ -46,18 +48,6 @@ func (t *Transaction) String() string {
 	return fmt.Sprintf("%s\t%-10s\t%d\t%s\t%s(%s)", t.Date.Format("02 Jan 2006"), t.Description, t.Amount, t.Account, t.Category, t.Type)
 
 }
-
-// ID          string
-// Amount      int
-// Type        TransactionType
-// Currency    Currency
-// Description string
-// Date        time.Time
-// Category    TransactionCategory
-// IsDebit     bool
-// Account     string // TODO use strongly typed accounts
-// Created     time.Time
-// Updated     time.Time
 
 type TransactionType string
 
@@ -163,4 +153,8 @@ func validateType(ty TransactionType, isDebit bool) error {
 		}
 	}
 	return nil
+}
+
+func NewID() string {
+	return ksuid.New().String()
 }

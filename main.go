@@ -4,24 +4,27 @@ import (
 	"fmt"
 	"log"
 	"time"
+
+	"github.com/siddhantac/fintra/domain"
+	"github.com/siddhantac/fintra/repository"
 )
 
 func main() {
-	ms := NewMemStore()
+	ms := repository.NewMemStore()
 
-	tx, err := NewTransaction(23, time.Now(), true, string(TrCategoryEntertainment), string(TrTypeExpense), "movies", "Citibank")
+	tx, err := domain.NewTransaction(23, time.Now(), true, string(domain.TrCategoryEntertainment), string(domain.TrTypeExpense), "movies", "Citibank")
 	if err != nil {
 		log.Fatal(err)
 	}
 	ms.Insert(tx)
 
-	tx2, err := NewTransaction(11, time.Now(), true, string(TrCategoryMeals), string(TrTypeExpense), "foodpanda", "Citibank")
+	tx2, err := domain.NewTransaction(11, time.Now(), true, string(domain.TrCategoryMeals), string(domain.TrTypeExpense), "foodpanda", "Citibank")
 	if err != nil {
 		log.Fatal(err)
 	}
 	ms.Insert(tx2)
 
-	tx3, err := NewTransaction(12, time.Now(), true, string(TrCategoryMeals), string(TrTypeExpense), "deliveroo", "Citibank")
+	tx3, err := domain.NewTransaction(12, time.Now(), true, string(domain.TrCategoryMeals), string(domain.TrTypeExpense), "deliveroo", "Citibank")
 	if err != nil {
 		log.Fatal(err)
 	}

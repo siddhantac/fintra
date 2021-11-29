@@ -7,14 +7,14 @@
 * add `account` field later
 
 ## Phase 0
-- [ ] bank account
+- [x] bank account
     - [x] starting balance
     - [x] current balance
 - [ ] 2 categories + savings
-- [ ] overview of the whole system (status report)
+- [x] overview of the whole system (status report)
     - [x]show a table with all transactions
-- [ ] in-memory storage for transactions
-- [ ] API methods:
+- [x] in-memory storage for transactions
+- [x] API methods:
 	- [x] create new transaction
 	- [x] get all transactions
 

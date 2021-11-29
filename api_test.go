@@ -7,6 +7,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/siddhantac/fintra/domain"
+	"github.com/siddhantac/fintra/repository"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -42,8 +44,8 @@ func TestGetTransaction(t *testing.T) {
 			r := httptest.NewRequest(http.MethodGet, "/transactions/1", nil)
 			w := httptest.NewRecorder()
 
-			mockRepo := &MemStore{
-				transactions: map[string]*Transaction{
+			mockRepo := &repository.MemStore{
+				Transactions: map[string]*domain.Transaction{
 					"1": {
 						ID:          "1",
 						Amount:      23,
@@ -122,7 +124,7 @@ func TestCreateTransaction(t *testing.T) {
 			r := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(test.reqBody))
 			w := httptest.NewRecorder()
 
-			handler := CreateTransaction(&MemStore{}, mockIDGenerator{})
+			handler := CreateTransaction(&repository.MemStore{}, mockIDGenerator{})
 			handler(w, r)
 
 			assert.Equal(t, test.wantCode, w.Code)
