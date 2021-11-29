@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/siddhantac/fintra/domain"
-	"github.com/siddhantac/fintra/repository"
+	"github.com/siddhantac/fintra/infra/store"
 )
 
 func main() {
-	ms := repository.NewMemStore()
+	ms := store.NewMemStore()
 
 	tx, err := domain.NewTransaction(23, time.Now(), true, string(domain.TrCategoryEntertainment), string(domain.TrTypeExpense), "movies", "Citibank")
 	if err != nil {

@@ -24,6 +24,9 @@
     - [ ] transactions repo
     - [ ] categories repo
 
+* memstore.go -> infrastructure/storage
+* repository/ -> accountRepo, transactionsRepo, categoriesRepo
+
 ## Phase 2
 * file based storage (json)
 * API methods:
