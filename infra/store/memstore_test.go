@@ -1,4 +1,4 @@
-package repository
+package store
 
 import (
 	"testing"
@@ -10,19 +10,17 @@ import (
 
 func TestGetAll(t *testing.T) {
 	ms := NewMemStore()
-	assert.Equal(t, 0, ms.NumTransactions())
+	assert.Equal(t, 0, ms.Len())
 
 	tx, err := domain.NewTransaction(23, time.Now(), true, string(domain.TrCategoryEntertainment), string(domain.TrTypeExpense), "desc", "Citibank")
 	assert.NoError(t, err)
-	err = ms.Insert(tx)
-	assert.NoError(t, err)
+	ms.Insert(tx)
 
-	assert.Equal(t, 1, ms.NumTransactions())
+	assert.Equal(t, 1, ms.Len())
 
 	tx2, err := domain.NewTransaction(11, time.Now(), true, string(domain.TrCategoryMeals), string(domain.TrTypeExpense), "desc", "Citibank")
 	assert.NoError(t, err)
-	err = ms.Insert(tx2)
-	assert.NoError(t, err)
+	ms.Insert(tx2)
 
 	txns := ms.GetAll()
 	assert.Len(t, txns, 2)
