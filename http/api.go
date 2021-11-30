@@ -45,8 +45,8 @@ func NewTime(t time.Time) Time {
 }
 
 type Repository interface {
-	Insert(*domain.Transaction)
-	Get(string) *domain.Transaction
+	Insert(*domain.Transaction) error
+	GetByID(string) (*domain.Transaction, error)
 }
 
 type IDGenerator interface {
@@ -56,7 +56,13 @@ type IDGenerator interface {
 func GetTransaction(repo Repository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := strings.TrimPrefix(r.URL.Path, "/transactions/")
-		transaction := repo.Get(id)
+		transaction, err := repo.GetByID(id)
+		if err != nil {
+			log.Println(err)
+			http.Error(w, newErrorResponse(err.Error()), http.StatusBadRequest)
+			return
+		}
+
 		if transaction == nil {
 			http.Error(w, "not found", http.StatusNotFound)
 			return
@@ -94,6 +100,12 @@ func CreateTransaction(repo Repository, idGenerator IDGenerator) func(w http.Res
 			return
 		}
 		transaction.ID = idGenerator.NewID()
+
+		if err := repo.Insert(transaction); err != nil {
+			log.Println(err)
+			http.Error(w, newErrorResponse(err.Error()), http.StatusInternalServerError)
+			return
+		}
 
 		resp := newTransactionResponse(transaction)
 		w.WriteHeader(http.StatusOK)

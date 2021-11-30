@@ -9,6 +9,7 @@ import (
 
 	"github.com/siddhantac/fintra/domain"
 	"github.com/siddhantac/fintra/infra/store"
+	"github.com/siddhantac/fintra/repository"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -44,20 +45,21 @@ func TestGetTransaction(t *testing.T) {
 			r := httptest.NewRequest(http.MethodGet, "/transactions/1", nil)
 			w := httptest.NewRecorder()
 
-			mockRepo := &store.MemStore{
-				Transactions: map[string]*domain.Transaction{
-					"1": {
-						ID:          "1",
-						Amount:      23,
-						Type:        "expense",
-						Description: "dinner",
-						Date:        time.Date(2021, 8, 17, 0, 0, 0, 0, &time.Location{}),
-						Category:    "meals",
-						IsDebit:     true,
-						Account:     "axis bank",
-					},
+			memstore := store.NewMemStore()
+			memstore.Items = map[string]interface{}{
+				"1": &domain.Transaction{
+					ID:          "1",
+					Amount:      23,
+					Type:        "expense",
+					Description: "dinner",
+					Date:        time.Date(2021, 8, 17, 0, 0, 0, 0, &time.Location{}),
+					Category:    "meals",
+					IsDebit:     true,
+					Account:     "axis bank",
 				},
 			}
+
+			mockRepo := repository.NewTransactionRepository(memstore)
 			handler := GetTransaction(mockRepo)
 			handler(w, r)
 
@@ -124,7 +126,9 @@ func TestCreateTransaction(t *testing.T) {
 			r := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(test.reqBody))
 			w := httptest.NewRecorder()
 
-			handler := CreateTransaction(&store.MemStore{}, mockIDGenerator{})
+			memstore := store.NewMemStore()
+			mockRepo := repository.NewTransactionRepository(memstore)
+			handler := CreateTransaction(mockRepo, mockIDGenerator{})
 			handler(w, r)
 
 			assert.Equal(t, test.wantCode, w.Code)

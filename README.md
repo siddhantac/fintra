@@ -19,12 +19,12 @@
 	- [x] get all transactions
 
 ## Phase 1
+- [ ] [NEXT] http server
 - [ ] repository layer
+    - [x] transactions repo
     - [ ] account repo (cols: txn id, txn amt, running balance)
-    - [ ] transactions repo
     - [ ] categories repo
 
-* memstore.go -> infrastructure/storage
 * repository/ -> accountRepo, transactionsRepo, categoriesRepo
 
 ## Phase 2

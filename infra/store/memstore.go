@@ -2,51 +2,50 @@ package store
 
 import (
 	"sync"
-
-	"github.com/siddhantac/fintra/domain"
 )
 
 type MemStore struct {
-	inited       bool
-	Transactions map[string]*domain.Transaction
-	mtx          sync.Mutex
+	inited bool
+	Items  map[string]interface{}
+	mtx    sync.Mutex
 }
 
 func NewMemStore() *MemStore {
 	return &MemStore{
-		inited:       true,
-		Transactions: make(map[string]*domain.Transaction),
-		mtx:          sync.Mutex{},
+		inited: true,
+		Items:  make(map[string]interface{}),
+		mtx:    sync.Mutex{},
 	}
 }
 
-func (ms *MemStore) Len() int {
+func (ms *MemStore) Count() int {
 	if !ms.inited {
 		return 0
 	}
 	ms.mtx.Lock()
 	defer ms.mtx.Unlock()
-	return len(ms.Transactions)
+	return len(ms.Items)
 }
 
-func (ms *MemStore) Insert(t *domain.Transaction) {
+func (ms *MemStore) Insert(id string, item interface{}) error {
 	ms.mtx.Lock()
 	defer ms.mtx.Unlock()
-	ms.Transactions[t.ID] = t
+	ms.Items[id] = item
+	return nil
 }
 
-func (ms *MemStore) Get(id string) *domain.Transaction {
+func (ms *MemStore) GetByID(id string) (interface{}, error) {
 	ms.mtx.Lock()
 	defer ms.mtx.Unlock()
-	return ms.Transactions[id]
+	return ms.Items[id], nil
 }
 
-func (ms *MemStore) GetAll() []*domain.Transaction {
+func (ms *MemStore) GetAll() []interface{} {
 	ms.mtx.Lock()
 	defer ms.mtx.Unlock()
-	allTx := make([]*domain.Transaction, 0, len(ms.Transactions))
-	for _, tx := range ms.Transactions {
-		allTx = append(allTx, tx)
+	all := make([]interface{}, 0, len(ms.Items))
+	for _, tx := range ms.Items {
+		all = append(all, tx)
 	}
-	return allTx
+	return all
 }

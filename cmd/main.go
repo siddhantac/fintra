@@ -16,19 +16,19 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	ms.Insert(tx)
+	ms.Insert(tx.ID, tx)
 
 	tx2, err := domain.NewTransaction(11, time.Now(), true, string(domain.TrCategoryMeals), string(domain.TrTypeExpense), "foodpanda", "Citibank")
 	if err != nil {
 		log.Fatal(err)
 	}
-	ms.Insert(tx2)
+	ms.Insert(tx2.ID, tx2)
 
 	tx3, err := domain.NewTransaction(12, time.Now(), true, string(domain.TrCategoryMeals), string(domain.TrTypeExpense), "deliveroo", "Citibank")
 	if err != nil {
 		log.Fatal(err)
 	}
-	ms.Insert(tx3)
+	ms.Insert(tx3.ID, tx3)
 
 	alltx := ms.GetAll()
 
