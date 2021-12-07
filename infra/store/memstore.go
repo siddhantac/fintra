@@ -49,3 +49,10 @@ func (ms *MemStore) GetAll() []interface{} {
 	}
 	return all
 }
+
+func (ms *MemStore) Update(id string, item interface{}) error {
+	ms.mtx.Lock()
+	defer ms.mtx.Unlock()
+	ms.Items[id] = item
+	return nil
+}
