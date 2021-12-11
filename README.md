@@ -19,11 +19,11 @@
 	- [x] get all transactions
 
 ## Phase 1
-- [ ] setup proper architecture
+- [x] setup proper architecture
     - [x] service layer
-    - [-] http layer (WIP)
-    - [ ] wire everything together in main
-- [ ] [NEXT] http server
+    - [x] http layer (WIP)
+    - [x] wire everything together in main
+- [-] [WIP] http server
 - [ ] repository layer
     - [x] transactions repo
     - [ ] account repo (cols: txn id, txn amt, running balance)
