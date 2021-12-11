@@ -47,22 +47,22 @@ func TestGetTransaction(t *testing.T) {
 			r := httptest.NewRequest(http.MethodGet, "/transactions/1", nil)
 			w := httptest.NewRecorder()
 
-			memstore := store.NewMemStore()
-			memstore.Items = map[string]interface{}{
-				"1": &domain.Transaction{
-					ID:          "1",
-					Amount:      23,
-					Type:        "expense",
-					Description: "dinner",
-					Date:        time.Date(2021, 8, 17, 0, 0, 0, 0, &time.Location{}),
-					Category:    "meals",
-					IsDebit:     true,
-					Account:     "axis bank",
+			mockSvc := &ServiceMock{
+				GetTransactionFunc: func(id string) (*domain.Transaction, error) {
+					return &domain.Transaction{
+						ID:          "1",
+						Amount:      23,
+						Type:        "expense",
+						Description: "dinner",
+						Date:        time.Date(2021, 8, 17, 0, 0, 0, 0, &time.Location{}),
+						Category:    "meals",
+						IsDebit:     true,
+						Account:     "axis bank",
+					}, nil
 				},
 			}
 
-			mockRepo := repository.NewTransactionRepository(memstore)
-			handler := NewHandler(mockRepo)
+			handler := NewHandler(mockSvc)
 			handler.GetTransaction(w, r)
 
 			assert.Equal(t, test.wantCode, w.Code)

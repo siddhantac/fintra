@@ -8,110 +8,67 @@ import (
 	"sync"
 )
 
-// Ensure, that RepositoryMock does implement Repository.
+// Ensure, that ServiceMock does implement Service.
 // If this is not the case, regenerate this file with moq.
-var _ Repository = &RepositoryMock{}
+var _ Service = &ServiceMock{}
 
-// RepositoryMock is a mock implementation of Repository.
+// ServiceMock is a mock implementation of Service.
 //
-// 	func TestSomethingThatUsesRepository(t *testing.T) {
+// 	func TestSomethingThatUsesService(t *testing.T) {
 //
-// 		// make and configure a mocked Repository
-// 		mockedRepository := &RepositoryMock{
-// 			GetByIDFunc: func(s string) (*domain.Transaction, error) {
-// 				panic("mock out the GetByID method")
-// 			},
-// 			InsertFunc: func(transaction *domain.Transaction) error {
-// 				panic("mock out the Insert method")
+// 		// make and configure a mocked Service
+// 		mockedService := &ServiceMock{
+// 			GetTransactionFunc: func(id string) (*domain.Transaction, error) {
+// 				panic("mock out the GetTransaction method")
 // 			},
 // 		}
 //
-// 		// use mockedRepository in code that requires Repository
+// 		// use mockedService in code that requires Service
 // 		// and then make assertions.
 //
 // 	}
-type RepositoryMock struct {
-	// GetByIDFunc mocks the GetByID method.
-	GetByIDFunc func(s string) (*domain.Transaction, error)
-
-	// InsertFunc mocks the Insert method.
-	InsertFunc func(transaction *domain.Transaction) error
+type ServiceMock struct {
+	// GetTransactionFunc mocks the GetTransaction method.
+	GetTransactionFunc func(id string) (*domain.Transaction, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
-		// GetByID holds details about calls to the GetByID method.
-		GetByID []struct {
-			// S is the s argument value.
-			S string
-		}
-		// Insert holds details about calls to the Insert method.
-		Insert []struct {
-			// Transaction is the transaction argument value.
-			Transaction *domain.Transaction
+		// GetTransaction holds details about calls to the GetTransaction method.
+		GetTransaction []struct {
+			// ID is the id argument value.
+			ID string
 		}
 	}
-	lockGetByID sync.RWMutex
-	lockInsert  sync.RWMutex
+	lockGetTransaction sync.RWMutex
 }
 
-// GetByID calls GetByIDFunc.
-func (mock *RepositoryMock) GetByID(s string) (*domain.Transaction, error) {
-	if mock.GetByIDFunc == nil {
-		panic("RepositoryMock.GetByIDFunc: method is nil but Repository.GetByID was just called")
+// GetTransaction calls GetTransactionFunc.
+func (mock *ServiceMock) GetTransaction(id string) (*domain.Transaction, error) {
+	if mock.GetTransactionFunc == nil {
+		panic("ServiceMock.GetTransactionFunc: method is nil but Service.GetTransaction was just called")
 	}
 	callInfo := struct {
-		S string
+		ID string
 	}{
-		S: s,
+		ID: id,
 	}
-	mock.lockGetByID.Lock()
-	mock.calls.GetByID = append(mock.calls.GetByID, callInfo)
-	mock.lockGetByID.Unlock()
-	return mock.GetByIDFunc(s)
+	mock.lockGetTransaction.Lock()
+	mock.calls.GetTransaction = append(mock.calls.GetTransaction, callInfo)
+	mock.lockGetTransaction.Unlock()
+	return mock.GetTransactionFunc(id)
 }
 
-// GetByIDCalls gets all the calls that were made to GetByID.
+// GetTransactionCalls gets all the calls that were made to GetTransaction.
 // Check the length with:
-//     len(mockedRepository.GetByIDCalls())
-func (mock *RepositoryMock) GetByIDCalls() []struct {
-	S string
+//     len(mockedService.GetTransactionCalls())
+func (mock *ServiceMock) GetTransactionCalls() []struct {
+	ID string
 } {
 	var calls []struct {
-		S string
+		ID string
 	}
-	mock.lockGetByID.RLock()
-	calls = mock.calls.GetByID
-	mock.lockGetByID.RUnlock()
-	return calls
-}
-
-// Insert calls InsertFunc.
-func (mock *RepositoryMock) Insert(transaction *domain.Transaction) error {
-	if mock.InsertFunc == nil {
-		panic("RepositoryMock.InsertFunc: method is nil but Repository.Insert was just called")
-	}
-	callInfo := struct {
-		Transaction *domain.Transaction
-	}{
-		Transaction: transaction,
-	}
-	mock.lockInsert.Lock()
-	mock.calls.Insert = append(mock.calls.Insert, callInfo)
-	mock.lockInsert.Unlock()
-	return mock.InsertFunc(transaction)
-}
-
-// InsertCalls gets all the calls that were made to Insert.
-// Check the length with:
-//     len(mockedRepository.InsertCalls())
-func (mock *RepositoryMock) InsertCalls() []struct {
-	Transaction *domain.Transaction
-} {
-	var calls []struct {
-		Transaction *domain.Transaction
-	}
-	mock.lockInsert.RLock()
-	calls = mock.calls.Insert
-	mock.lockInsert.RUnlock()
+	mock.lockGetTransaction.RLock()
+	calls = mock.calls.GetTransaction
+	mock.lockGetTransaction.RUnlock()
 	return calls
 }

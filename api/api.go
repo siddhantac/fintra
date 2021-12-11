@@ -34,7 +34,6 @@ type TransactionResponse struct {
 	// Created     Time   `json:"created"`
 }
 
-//go:generate moq -out api_mock_test.go . Repository
 type Repository interface {
 	Insert(*domain.Transaction) error
 	GetByID(string) (*domain.Transaction, error)
@@ -45,16 +44,21 @@ type IDGenerator interface {
 }
 
 type Handler struct {
-	txnRepo Repository
+	service Service
 }
 
-func NewHandler(txnRepo Repository) *Handler {
-	return &Handler{txnRepo: txnRepo}
+//go:generate moq -out api_mock_test.go . Service
+type Service interface {
+	GetTransaction(id string) (*domain.Transaction, error)
+}
+
+func NewHandler(service Service) *Handler {
+	return &Handler{service: service}
 }
 
 func (h *Handler) GetTransaction(w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimPrefix(r.URL.Path, "/transactions/")
-	transaction, err := h.txnRepo.GetByID(id)
+	transaction, err := h.service.GetTransaction(id)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, newErrorResponse(err.Error()), http.StatusBadRequest)
