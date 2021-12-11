@@ -6,6 +6,8 @@ import (
 	// "time"
 
 	"github.com/siddhantac/fintra/api"
+	"github.com/siddhantac/fintra/service"
+
 	// "github.com/siddhantac/fintra/domain"
 	"github.com/siddhantac/fintra/infra/store"
 	"github.com/siddhantac/fintra/repository"
@@ -47,9 +49,9 @@ func main() {
 	// }
 
 	txnRepo := repository.NewTransactionRepository(store.NewMemStore())
-	// svc := service.NewService(txnRepo)
-	h := api.CreateTransaction(txnRepo)
+	svc := service.NewService(txnRepo)
+	h := api.NewHandler(svc)
 
-	http.HandleFunc("/transaction", h)
+	http.HandleFunc("/transaction", h.CreateTransaction)
 	http.ListenAndServe("", nil)
 }
