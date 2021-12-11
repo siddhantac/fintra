@@ -34,16 +34,7 @@ type TransactionResponse struct {
 	// Created     Time   `json:"created"`
 }
 
-type Time string
-
-const (
-	dateLayout = "2006-01-02"
-)
-
-func NewTime(t time.Time) Time {
-	return Time(t.Round(time.Second).In(time.UTC).Format(dateLayout))
-}
-
+//go:generate moq -out api_mock_test.go . Repository
 type Repository interface {
 	Insert(*domain.Transaction) error
 	GetByID(string) (*domain.Transaction, error)
@@ -53,27 +44,33 @@ type IDGenerator interface {
 	NewID() string
 }
 
-func GetTransaction(repo Repository) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		id := strings.TrimPrefix(r.URL.Path, "/transactions/")
-		transaction, err := repo.GetByID(id)
-		if err != nil {
-			log.Println(err)
-			http.Error(w, newErrorResponse(err.Error()), http.StatusBadRequest)
-			return
-		}
+type Handler struct {
+	txnRepo Repository
+}
 
-		if transaction == nil {
-			http.Error(w, "not found", http.StatusNotFound)
-			return
-		}
+func NewHandler(txnRepo Repository) *Handler {
+	return &Handler{txnRepo: txnRepo}
+}
 
-		resp := newTransactionResponse(transaction)
-		w.WriteHeader(http.StatusOK)
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Println(err)
-			http.Error(w, "internal error", http.StatusInternalServerError)
-		}
+func (h *Handler) GetTransaction(w http.ResponseWriter, r *http.Request) {
+	id := strings.TrimPrefix(r.URL.Path, "/transactions/")
+	transaction, err := h.txnRepo.GetByID(id)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, newErrorResponse(err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	if transaction == nil {
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
+
+	resp := newTransactionResponse(transaction)
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Println(err)
+		http.Error(w, "internal error", http.StatusInternalServerError)
 	}
 }
 
@@ -142,4 +139,14 @@ func newTransactionResponse(t *domain.Transaction) TransactionResponse {
 		Account:     t.Account,
 		// Created:     NewTime(transaction.Created),
 	}
+}
+
+const (
+	dateLayout = "2006-01-02"
+)
+
+type Time string
+
+func NewTime(t time.Time) Time {
+	return Time(t.Round(time.Second).In(time.UTC).Format(dateLayout))
 }

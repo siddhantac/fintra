@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"fmt"
-
 	"github.com/siddhantac/fintra/domain"
 )
 
@@ -29,6 +27,7 @@ func (r *AccountRepo) GetByID(id string) (*domain.Account, error) {
 	return acc, nil
 }
 
+/*
 func (r *AccountRepo) CreditToAccount(id string, amount int64) (int64, error) {
 	acc, err := r.GetByID(id)
 	if err != nil {
@@ -54,3 +53,4 @@ func (r *AccountRepo) DebitFromAccount(id string, amount int64) (int64, error) {
 	}
 	return acc.Balance, nil
 }
+*/

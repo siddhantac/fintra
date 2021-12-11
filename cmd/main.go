@@ -47,6 +47,7 @@ func main() {
 	// }
 
 	txnRepo := repository.NewTransactionRepository(store.NewMemStore())
+	// svc := service.NewService(txnRepo)
 	h := api.CreateTransaction(txnRepo)
 
 	http.HandleFunc("/transaction", h)

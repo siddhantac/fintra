@@ -19,6 +19,10 @@
 	- [x] get all transactions
 
 ## Phase 1
+- [ ] setup proper architecture
+    - [x] service layer
+    - [-] http layer (WIP)
+    - [ ] wire everything together in main
 - [ ] [NEXT] http server
 - [ ] repository layer
     - [x] transactions repo

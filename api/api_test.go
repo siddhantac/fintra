@@ -62,8 +62,8 @@ func TestGetTransaction(t *testing.T) {
 			}
 
 			mockRepo := repository.NewTransactionRepository(memstore)
-			handler := GetTransaction(mockRepo)
-			handler(w, r)
+			handler := NewHandler(mockRepo)
+			handler.GetTransaction(w, r)
 
 			assert.Equal(t, test.wantCode, w.Code)
 			assert.JSONEq(t, test.wantRespBody, string(w.Body.Bytes()))
