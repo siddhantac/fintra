@@ -78,7 +78,6 @@ func TestCreateTransaction(t *testing.T) {
 		expectedResp map[string]interface{}
 		compareResp  func(t *testing.T, m map[string]interface{})
 		serviceCalls int
-		// mockNewTransaction func(amount int, isDebit bool, date, category, transactionType, description, account string) (*domain.Transaction, error)
 	}{
 		"valid expense request": {
 			reqBody: `{
@@ -93,8 +92,6 @@ func TestCreateTransaction(t *testing.T) {
 			}`,
 			wantCode:     http.StatusOK,
 			serviceCalls: 1,
-			// mockNewTransaction: func(amount int, isDebit bool, date, category, transactionType, description, account string) (*domain.Transaction, error) {
-			// },
 			compareResp: func(t *testing.T, m map[string]interface{}) {
 				t.Helper()
 				require.Contains(t, m, "id")
@@ -136,6 +133,7 @@ func TestCreateTransaction(t *testing.T) {
 				"is_debit": true,
 				"account": "axis bank"
 			}`,
+			serviceCalls: 1,
 			wantCode:     http.StatusBadRequest,
 			expectedResp: map[string]interface{}{"error": "income must be credit"},
 			compareResp: func(t *testing.T, m map[string]interface{}) {
@@ -164,6 +162,7 @@ func TestCreateTransaction(t *testing.T) {
 			err := json.Unmarshal(w.Body.Bytes(), &m)
 			require.NoError(t, err)
 			test.compareResp(t, m)
+			require.Len(t, mockSvc.NewTransactionCalls(), test.serviceCalls)
 		})
 	}
 }
