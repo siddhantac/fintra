@@ -50,6 +50,10 @@ type Handler struct {
 //go:generate moq -out api_mock_test.go . Service
 type Service interface {
 	GetTransaction(id string) (*domain.Transaction, error)
+	NewTransaction(
+		amount int,
+		isDebit bool,
+		date, category, transactionType, description, account string) (*domain.Transaction, error)
 }
 
 func NewHandler(service Service) *Handler {
@@ -78,41 +82,26 @@ func (h *Handler) GetTransaction(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func CreateTransaction(repo Repository) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		var ctr CreateTransactionRequest
-		if err := json.NewDecoder(r.Body).Decode(&ctr); err != nil {
-			log.Println(err)
-			http.Error(w, newErrorResponse("invalid JSON"), http.StatusBadRequest)
-			return
-		}
+func (h *Handler) CreateTransaction(w http.ResponseWriter, r *http.Request) {
+	var ctr CreateTransactionRequest
+	if err := json.NewDecoder(r.Body).Decode(&ctr); err != nil {
+		log.Println(err)
+		http.Error(w, newErrorResponse("invalid JSON"), http.StatusBadRequest)
+		return
+	}
 
-		date, err := time.Parse(dateLayout, ctr.Date)
-		if err != nil {
-			log.Println(err)
-			http.Error(w, "invalid date", http.StatusBadRequest)
-			return
-		}
+	transaction, err := h.service.NewTransaction(ctr.Amount, ctr.IsDebit, ctr.Date, ctr.Category, ctr.Type, ctr.Description, ctr.Account)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, newErrorResponse(err.Error()), http.StatusBadRequest)
+		return
+	}
 
-		transaction, err := domain.NewTransaction(ctr.Amount, date, ctr.IsDebit, ctr.Category, ctr.Type, ctr.Description, ctr.Account)
-		if err != nil {
-			log.Println(err)
-			http.Error(w, newErrorResponse(err.Error()), http.StatusBadRequest)
-			return
-		}
-
-		if err := repo.Insert(transaction); err != nil {
-			log.Println(err)
-			http.Error(w, newErrorResponse(err.Error()), http.StatusInternalServerError)
-			return
-		}
-
-		resp := newTransactionResponse(transaction)
-		w.WriteHeader(http.StatusOK)
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Println(err)
-			http.Error(w, "internal error", http.StatusInternalServerError)
-		}
+	resp := newTransactionResponse(transaction)
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Println(err)
+		http.Error(w, "internal error", http.StatusInternalServerError)
 	}
 }
 

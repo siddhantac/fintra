@@ -9,8 +9,6 @@ import (
 	"time"
 
 	"github.com/siddhantac/fintra/domain"
-	"github.com/siddhantac/fintra/infra/store"
-	"github.com/siddhantac/fintra/repository"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -79,6 +77,8 @@ func TestCreateTransaction(t *testing.T) {
 		wantRespBody string
 		expectedResp map[string]interface{}
 		compareResp  func(t *testing.T, m map[string]interface{})
+		serviceCalls int
+		// mockNewTransaction func(amount int, isDebit bool, date, category, transactionType, description, account string) (*domain.Transaction, error)
 	}{
 		"valid expense request": {
 			reqBody: `{
@@ -91,7 +91,10 @@ func TestCreateTransaction(t *testing.T) {
 				"is_debit": true,
 				"account": "axis bank"
 			}`,
-			wantCode: http.StatusOK,
+			wantCode:     http.StatusOK,
+			serviceCalls: 1,
+			// mockNewTransaction: func(amount int, isDebit bool, date, category, transactionType, description, account string) (*domain.Transaction, error) {
+			// },
 			compareResp: func(t *testing.T, m map[string]interface{}) {
 				t.Helper()
 				require.Contains(t, m, "id")
@@ -147,10 +150,14 @@ func TestCreateTransaction(t *testing.T) {
 			r := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(test.reqBody))
 			w := httptest.NewRecorder()
 
-			memstore := store.NewMemStore()
-			mockRepo := repository.NewTransactionRepository(memstore)
-			handler := CreateTransaction(mockRepo)
-			handler(w, r)
+			mockSvc := &ServiceMock{
+				NewTransactionFunc: func(amount int, isDebit bool, date, category, transactionType, description, account string) (*domain.Transaction, error) {
+					d := time.Date(2021, 8, 17, 0, 0, 0, 0, time.UTC)
+					return domain.NewTransaction(amount, d, isDebit, category, transactionType, description, account)
+				},
+			}
+			handler := NewHandler(mockSvc)
+			handler.CreateTransaction(w, r)
 
 			assert.Equal(t, test.wantCode, w.Code)
 			var m map[string]interface{}

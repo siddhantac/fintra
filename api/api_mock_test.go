@@ -21,6 +21,9 @@ var _ Service = &ServiceMock{}
 // 			GetTransactionFunc: func(id string) (*domain.Transaction, error) {
 // 				panic("mock out the GetTransaction method")
 // 			},
+// 			NewTransactionFunc: func(amount int, isDebit bool, date string, category string, transactionType string, description string, account string) (*domain.Transaction, error) {
+// 				panic("mock out the NewTransaction method")
+// 			},
 // 		}
 //
 // 		// use mockedService in code that requires Service
@@ -31,6 +34,9 @@ type ServiceMock struct {
 	// GetTransactionFunc mocks the GetTransaction method.
 	GetTransactionFunc func(id string) (*domain.Transaction, error)
 
+	// NewTransactionFunc mocks the NewTransaction method.
+	NewTransactionFunc func(amount int, isDebit bool, date string, category string, transactionType string, description string, account string) (*domain.Transaction, error)
+
 	// calls tracks calls to the methods.
 	calls struct {
 		// GetTransaction holds details about calls to the GetTransaction method.
@@ -38,8 +44,26 @@ type ServiceMock struct {
 			// ID is the id argument value.
 			ID string
 		}
+		// NewTransaction holds details about calls to the NewTransaction method.
+		NewTransaction []struct {
+			// Amount is the amount argument value.
+			Amount int
+			// IsDebit is the isDebit argument value.
+			IsDebit bool
+			// Date is the date argument value.
+			Date string
+			// Category is the category argument value.
+			Category string
+			// TransactionType is the transactionType argument value.
+			TransactionType string
+			// Description is the description argument value.
+			Description string
+			// Account is the account argument value.
+			Account string
+		}
 	}
 	lockGetTransaction sync.RWMutex
+	lockNewTransaction sync.RWMutex
 }
 
 // GetTransaction calls GetTransactionFunc.
@@ -70,5 +94,60 @@ func (mock *ServiceMock) GetTransactionCalls() []struct {
 	mock.lockGetTransaction.RLock()
 	calls = mock.calls.GetTransaction
 	mock.lockGetTransaction.RUnlock()
+	return calls
+}
+
+// NewTransaction calls NewTransactionFunc.
+func (mock *ServiceMock) NewTransaction(amount int, isDebit bool, date string, category string, transactionType string, description string, account string) (*domain.Transaction, error) {
+	if mock.NewTransactionFunc == nil {
+		panic("ServiceMock.NewTransactionFunc: method is nil but Service.NewTransaction was just called")
+	}
+	callInfo := struct {
+		Amount          int
+		IsDebit         bool
+		Date            string
+		Category        string
+		TransactionType string
+		Description     string
+		Account         string
+	}{
+		Amount:          amount,
+		IsDebit:         isDebit,
+		Date:            date,
+		Category:        category,
+		TransactionType: transactionType,
+		Description:     description,
+		Account:         account,
+	}
+	mock.lockNewTransaction.Lock()
+	mock.calls.NewTransaction = append(mock.calls.NewTransaction, callInfo)
+	mock.lockNewTransaction.Unlock()
+	return mock.NewTransactionFunc(amount, isDebit, date, category, transactionType, description, account)
+}
+
+// NewTransactionCalls gets all the calls that were made to NewTransaction.
+// Check the length with:
+//     len(mockedService.NewTransactionCalls())
+func (mock *ServiceMock) NewTransactionCalls() []struct {
+	Amount          int
+	IsDebit         bool
+	Date            string
+	Category        string
+	TransactionType string
+	Description     string
+	Account         string
+} {
+	var calls []struct {
+		Amount          int
+		IsDebit         bool
+		Date            string
+		Category        string
+		TransactionType string
+		Description     string
+		Account         string
+	}
+	mock.lockNewTransaction.RLock()
+	calls = mock.calls.NewTransaction
+	mock.lockNewTransaction.RUnlock()
 	return calls
 }
