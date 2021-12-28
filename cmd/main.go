@@ -2,7 +2,10 @@ package main
 
 import (
 	// "log"
+	"log"
 	"net/http"
+	"os"
+
 	// "time"
 
 	"github.com/siddhantac/fintra/api"
@@ -43,6 +46,13 @@ import (
 // }
 
 func main() {
+	if err := run(); err != nil {
+		log.Println(err)
+		os.Exit(1)
+	}
+}
+
+func run() error {
 	// tx, err := domain.NewTransaction(23, time.Now(), true, string(domain.TrCategoryEntertainment), string(domain.TrTypeExpense), "movies", "Citibank")
 	// if err != nil {
 	// 	log.Fatal(err)
@@ -52,6 +62,12 @@ func main() {
 	svc := service.NewService(txnRepo)
 	h := api.NewHandler(svc)
 
+	log.Println("starting...")
+
+	http.HandleFunc("/healthcheck", h.HealthCheck)
 	http.HandleFunc("/transaction", h.CreateTransaction)
-	http.ListenAndServe("", nil)
+	http.HandleFunc("/transactions", h.GetTransaction)
+	http.ListenAndServe(":8090", nil)
+	log.Println("stopped")
+	return nil
 }

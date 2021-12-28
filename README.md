@@ -13,7 +13,7 @@
 - [ ] 2 categories + savings
 - [x] overview of the whole system (status report)
     - [x]show a table with all transactions
-- [x] in-memory storage for transactions
+* [x] in-memory storage for transactions
 - [x] API methods:
 	- [x] create new transaction
 	- [x] get all transactions
@@ -24,6 +24,8 @@
     - [x] http layer (WIP)
     - [x] wire everything together in main
 - [-] [WIP] http server
+-   - [ ] add go-chi
+-   - [ ] add logs
 - [ ] repository layer
     - [x] transactions repo
     - [ ] account repo (cols: txn id, txn amt, running balance)

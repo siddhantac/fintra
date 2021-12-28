@@ -60,6 +60,20 @@ func NewHandler(service Service) *Handler {
 	return &Handler{service: service}
 }
 
+func (h *Handler) HealthCheck(w http.ResponseWriter, r *http.Request) {
+	resp := map[string]interface{}{
+		"status": "healthy",
+	}
+	b, err := json.Marshal(resp)
+	if err != nil {
+		http.Error(w, "failed to encode response", http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(b)
+	w.WriteHeader(http.StatusOK)
+}
+
 func (h *Handler) GetTransaction(w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimPrefix(r.URL.Path, "/transactions/")
 	transaction, err := h.service.GetTransaction(id)
