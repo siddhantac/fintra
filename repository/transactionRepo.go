@@ -33,3 +33,13 @@ func (r *TransactionRepository) GetByID(id string) (*domain.Transaction, error) 
 	txn := item.(*domain.Transaction)
 	return txn, nil
 }
+
+func (r *TransactionRepository) GetAll() ([]*domain.Transaction, error) {
+	items := r.store.GetAll()
+	txns := make([]*domain.Transaction, 0, len(items))
+	for _, item := range items {
+		txn := item.(*domain.Transaction)
+		txns = append(txns, txn)
+	}
+	return txns, nil
+}

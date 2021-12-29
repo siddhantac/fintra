@@ -26,6 +26,7 @@ type Service struct {
 type Repository interface {
 	Insert(*domain.Transaction) error
 	GetByID(string) (*domain.Transaction, error)
+	GetAll() ([]*domain.Transaction, error)
 }
 
 func NewService(repo Repository) *Service {
@@ -34,6 +35,10 @@ func NewService(repo Repository) *Service {
 
 func (s *Service) GetTransaction(id string) (*domain.Transaction, error) {
 	return s.repo.GetByID(id)
+}
+
+func (s *Service) GetAllTransactions() ([]*domain.Transaction, error) {
+	return s.repo.GetAll()
 }
 
 func (s *Service) NewTransaction(amount int, isDebit bool, date, category, transactionType, description, account string) (*domain.Transaction, error) {

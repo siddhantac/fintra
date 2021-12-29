@@ -18,6 +18,9 @@ var _ Service = &ServiceMock{}
 //
 // 		// make and configure a mocked Service
 // 		mockedService := &ServiceMock{
+// 			GetAllTransactionsFunc: func() ([]*domain.Transaction, error) {
+// 				panic("mock out the GetAllTransactions method")
+// 			},
 // 			GetTransactionFunc: func(id string) (*domain.Transaction, error) {
 // 				panic("mock out the GetTransaction method")
 // 			},
@@ -31,6 +34,9 @@ var _ Service = &ServiceMock{}
 //
 // 	}
 type ServiceMock struct {
+	// GetAllTransactionsFunc mocks the GetAllTransactions method.
+	GetAllTransactionsFunc func() ([]*domain.Transaction, error)
+
 	// GetTransactionFunc mocks the GetTransaction method.
 	GetTransactionFunc func(id string) (*domain.Transaction, error)
 
@@ -39,6 +45,9 @@ type ServiceMock struct {
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// GetAllTransactions holds details about calls to the GetAllTransactions method.
+		GetAllTransactions []struct {
+		}
 		// GetTransaction holds details about calls to the GetTransaction method.
 		GetTransaction []struct {
 			// ID is the id argument value.
@@ -62,8 +71,35 @@ type ServiceMock struct {
 			Account string
 		}
 	}
-	lockGetTransaction sync.RWMutex
-	lockNewTransaction sync.RWMutex
+	lockGetAllTransactions sync.RWMutex
+	lockGetTransaction     sync.RWMutex
+	lockNewTransaction     sync.RWMutex
+}
+
+// GetAllTransactions calls GetAllTransactionsFunc.
+func (mock *ServiceMock) GetAllTransactions() ([]*domain.Transaction, error) {
+	if mock.GetAllTransactionsFunc == nil {
+		panic("ServiceMock.GetAllTransactionsFunc: method is nil but Service.GetAllTransactions was just called")
+	}
+	callInfo := struct {
+	}{}
+	mock.lockGetAllTransactions.Lock()
+	mock.calls.GetAllTransactions = append(mock.calls.GetAllTransactions, callInfo)
+	mock.lockGetAllTransactions.Unlock()
+	return mock.GetAllTransactionsFunc()
+}
+
+// GetAllTransactionsCalls gets all the calls that were made to GetAllTransactions.
+// Check the length with:
+//     len(mockedService.GetAllTransactionsCalls())
+func (mock *ServiceMock) GetAllTransactionsCalls() []struct {
+} {
+	var calls []struct {
+	}
+	mock.lockGetAllTransactions.RLock()
+	calls = mock.calls.GetAllTransactions
+	mock.lockGetAllTransactions.RUnlock()
+	return calls
 }
 
 // GetTransaction calls GetTransactionFunc.

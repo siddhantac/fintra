@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"strings"
 	"time"
 
+	"github.com/go-chi/chi"
 	"github.com/siddhantac/fintra/domain"
 )
 
@@ -34,10 +34,10 @@ type TransactionResponse struct {
 	// Created     Time   `json:"created"`
 }
 
-type Repository interface {
-	Insert(*domain.Transaction) error
-	GetByID(string) (*domain.Transaction, error)
-}
+// type Repository interface {
+//     Insert(*domain.Transaction) error
+//     GetByID(string) (*domain.Transaction, error)
+// }
 
 type IDGenerator interface {
 	NewID() string
@@ -49,6 +49,7 @@ type Handler struct {
 
 //go:generate moq -out api_mock_test.go . Service
 type Service interface {
+	GetAllTransactions() ([]*domain.Transaction, error)
 	GetTransaction(id string) (*domain.Transaction, error)
 	NewTransaction(
 		amount int,
@@ -74,8 +75,27 @@ func (h *Handler) HealthCheck(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func (h *Handler) GetTransaction(w http.ResponseWriter, r *http.Request) {
-	id := strings.TrimPrefix(r.URL.Path, "/transactions/")
+func (h *Handler) GetAllTransactions(w http.ResponseWriter, r *http.Request) {
+	transactions, err := h.service.GetAllTransactions()
+	if err != nil {
+		log.Println(err)
+		http.Error(w, newErrorResponse(err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	txnResps := make([]TransactionResponse, 0, len(transactions))
+	for _, txn := range transactions {
+		txnResps = append(txnResps, newTransactionResponse(txn))
+	}
+
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(txnResps); err != nil {
+		log.Println(err)
+		http.Error(w, "internal error", http.StatusInternalServerError)
+	}
+}
+func (h *Handler) GetTransactionByID(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
 	transaction, err := h.service.GetTransaction(id)
 	if err != nil {
 		log.Println(err)

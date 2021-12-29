@@ -36,6 +36,7 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 
+	fmt.Println("healthcheck successful")
 	m.Run()
 
 	cancel()

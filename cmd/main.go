@@ -8,6 +8,7 @@ import (
 
 	// "time"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/siddhantac/fintra/api"
 	"github.com/siddhantac/fintra/service"
 
@@ -64,10 +65,12 @@ func run() error {
 
 	log.Println("starting...")
 
-	http.HandleFunc("/healthcheck", h.HealthCheck)
-	http.HandleFunc("/transaction", h.CreateTransaction)
-	http.HandleFunc("/transactions", h.GetTransaction)
-	http.ListenAndServe(":8090", nil)
+	r := chi.NewRouter()
+	r.Get("/healthcheck", h.HealthCheck)
+	r.Post("/transaction", h.CreateTransaction)
+	// r.Get("/transactions", h.GetAllTransactions)
+	r.Get("/transactions/{id}", h.GetTransactionByID)
+	http.ListenAndServe(":8090", r)
 	log.Println("stopped")
 	return nil
 }
