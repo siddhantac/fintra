@@ -71,8 +71,8 @@ func (h *Handler) HealthCheck(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write(b)
 	w.WriteHeader(http.StatusOK)
+	w.Write(b)
 }
 
 func (h *Handler) GetAllTransactions(w http.ResponseWriter, r *http.Request) {

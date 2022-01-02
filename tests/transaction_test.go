@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"testing"
@@ -19,8 +18,8 @@ func TestBasicFlow(t *testing.T) {
 
 		body, err := ioutil.ReadAll(resp.Body)
 		require.NoError(t, err)
-		fmt.Println(string(body))
-		require.Len(t, body, 0)
+		require.Equal(t, `[]
+`, string(body))
 	})
 
 	// list all transactions, should be 0

@@ -2,9 +2,13 @@ package main
 
 import (
 	// "log"
+	"context"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
+	"sync"
+	"time"
 
 	// "time"
 
@@ -54,11 +58,6 @@ func main() {
 }
 
 func run() error {
-	// tx, err := domain.NewTransaction(23, time.Now(), true, string(domain.TrCategoryEntertainment), string(domain.TrTypeExpense), "movies", "Citibank")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
 	txnRepo := repository.NewTransactionRepository(store.NewMemStore())
 	svc := service.NewService(txnRepo)
 	h := api.NewHandler(svc)
@@ -68,9 +67,39 @@ func run() error {
 	r := chi.NewRouter()
 	r.Get("/healthcheck", h.HealthCheck)
 	r.Post("/transaction", h.CreateTransaction)
-	// r.Get("/transactions", h.GetAllTransactions)
+	r.Get("/transactions", h.GetAllTransactions)
 	r.Get("/transactions/{id}", h.GetTransactionByID)
-	http.ListenAndServe(":8090", r)
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+	srv := startServer(&wg, r)
+
+	// Setting up signal capturing
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt, os.Kill)
+	<-stop // waiting for SIGINT (kill -2)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Println("server shutdown: %v", err)
+	}
+
 	log.Println("stopped")
 	return nil
+}
+
+func startServer(wg *sync.WaitGroup, r http.Handler) *http.Server {
+	srv := &http.Server{Addr: ":8090", Handler: r}
+
+	go func() {
+		defer wg.Done()
+
+		if err := srv.ListenAndServe(); err != http.ErrServerClosed {
+			log.Println("ListenAndServe(): %v", err)
+		}
+	}()
+
+	return srv
 }
