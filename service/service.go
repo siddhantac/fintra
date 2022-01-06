@@ -41,13 +41,15 @@ func (s *Service) GetAllTransactions() ([]*domain.Transaction, error) {
 	return s.repo.GetAll()
 }
 
-func (s *Service) NewTransaction(amount int, isDebit bool, date, category, transactionType, description, account string) (*domain.Transaction, error) {
+func (s *Service) NewTransaction(amount float64, isDebit bool, date, category, transactionType, description, account string) (*domain.Transaction, error) {
 	d, err := time.Parse(dateLayout, date)
 	if err != nil {
 		return nil, fmt.Errorf("invalid date: %w", err)
 	}
 
-	transaction, err := domain.NewTransaction(amount, d, isDebit, category, transactionType, description, account)
+	intAmt := int(amount * 100)
+
+	transaction, err := domain.NewTransaction(intAmt, d, isDebit, category, transactionType, description, account)
 	if err != nil {
 		return nil, fmt.Errorf("domain.NewTransaction: %w", err)
 	}

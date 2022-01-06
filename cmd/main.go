@@ -12,6 +12,7 @@ import (
 
 	// "time"
 
+	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/siddhantac/fintra/api"
 	"github.com/siddhantac/fintra/service"
@@ -65,8 +66,9 @@ func run() error {
 	log.Println("starting...")
 
 	r := chi.NewRouter()
+	r.Use(middleware.Logger)
 	r.Get("/healthcheck", h.HealthCheck)
-	r.Post("/transaction", h.CreateTransaction)
+	r.Post("/transactions", h.CreateTransaction)
 	r.Get("/transactions", h.GetAllTransactions)
 	r.Get("/transactions/{id}", h.GetTransactionByID)
 

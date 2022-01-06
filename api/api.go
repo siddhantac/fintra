@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -11,8 +12,8 @@ import (
 )
 
 type CreateTransactionRequest struct {
-	Amount int    `json:"amount"`
-	Type   string `json:"type"`
+	Amount float64 `json:"amount"`
+	Type   string  `json:"type"`
 	// Currency    string `json:"currency"`
 	Description string `json:"description"`
 	Date        string `json:"date"`
@@ -52,7 +53,7 @@ type Service interface {
 	GetAllTransactions() ([]*domain.Transaction, error)
 	GetTransaction(id string) (*domain.Transaction, error)
 	NewTransaction(
-		amount int,
+		amount float64,
 		isDebit bool,
 		date, category, transactionType, description, account string) (*domain.Transaction, error)
 }
@@ -94,6 +95,7 @@ func (h *Handler) GetAllTransactions(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "internal error", http.StatusInternalServerError)
 	}
 }
+
 func (h *Handler) GetTransactionByID(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	transaction, err := h.service.GetTransaction(id)
@@ -120,7 +122,8 @@ func (h *Handler) CreateTransaction(w http.ResponseWriter, r *http.Request) {
 	var ctr CreateTransactionRequest
 	if err := json.NewDecoder(r.Body).Decode(&ctr); err != nil {
 		log.Println(err)
-		http.Error(w, newErrorResponse("invalid JSON"), http.StatusBadRequest)
+		msg := fmt.Sprintf("invalid json: %v", err)
+		http.Error(w, newErrorResponse(msg), http.StatusBadRequest)
 		return
 	}
 

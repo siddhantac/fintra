@@ -24,19 +24,30 @@
     - [x] http layer (WIP)
     - [x] wire everything together in main
 - [-] [WIP] http server
--   - [ ] add go-chi
--   - [ ] add logs
+-   - [x] add go-chi
+-   - [x] add logs
 - [ ] repository layer
     - [x] transactions repo
     - [ ] account repo (cols: txn id, txn amt, running balance)
-    - [ ] categories repo
+      - [ ] GET methods only. (POST method to create can be done later)
+    - [ ] categories repo (required by "assign budget per category")
+      - [ ] GET methods. (POST method to create can be done later)
 
 * repository/ -> accountRepo, transactionsRepo, categoriesRepo
 
-## Phase 2
-* file based storage (json)
+## Phase 2 - simple transactions
+* persistent storage
+    * file based storage (json)
+    * sqlite?
+* API methods to  return accounts and categories
+* API methods to add new ones (maybe)
+* account and category validation when creating transaction
+* system overview: see list of transactions
+* simple report: expenditure by category and by account, account balance
+
+## Phase 3 - zero based budget
 * API methods:
 	* set starting balance
-	* assign budget per category
+	* assign budget per category 
 	* re-assign category budget by moving money around
 * system status should show balance based on starting balance & all transactions since then
