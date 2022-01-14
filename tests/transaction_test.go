@@ -2,7 +2,6 @@ package tests
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -34,17 +33,20 @@ func TestBasicFlow(t *testing.T) {
 		url := baseURL + "/transactions"
 		t.Logf("calling %s", url)
 
-		reqBody := strings.NewReader(`{"amount": 13.5, "description": "Tasty Restaurant", "category": "meals", "date": "2021-12-23", "type": "expense", "isDebit": true}`)
+		reqBody := strings.NewReader(`{"amount": 13.5, "description": "Tasty Restaurant", "category": "meals", "date": "2021-12-23", "type": "expense", "is_debit": true, "account": "awesome bank"}`)
 		resp, err := http.Post(url, "application/json", reqBody)
 		require.NoError(t, err)
 
 		body, err := ioutil.ReadAll(resp.Body)
 		require.NoError(t, err)
-		fmt.Println(">>>", string(body))
 		require.Equal(t, http.StatusOK, resp.StatusCode)
 
+		var m map[string]interface{}
+		err = json.Unmarshal(body, &m)
+		require.NoError(t, err)
+		require.Equal(t, []interface{}{}, m)
+
 	})
-	// create a new transaction
 	// list the new transaction
 	// create another transaction
 	// list all transactions, should be 2
