@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -97,10 +98,17 @@ func (h *Handler) GetAllTransactions(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetTransactionByID(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
+	ctx := r.Context()
+	txid := ctx.Value("txnID").(string)
+	id := chi.URLParam(r, "txnID")
+	fmt.Println(">> handlr", id, " // ", txid)
 	transaction, err := h.service.GetTransaction(id)
 	if err != nil {
 		log.Println(err)
+		if errors.Is(err, domain.ErrNotFound) {
+			http.Error(w, newErrorResponse(err.Error()), http.StatusNotFound)
+			return
+		}
 		http.Error(w, newErrorResponse(err.Error()), http.StatusBadRequest)
 		return
 	}
@@ -135,7 +143,7 @@ func (h *Handler) CreateTransaction(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp := newTransactionResponse(transaction)
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusCreated)
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		log.Println(err)
 		http.Error(w, "internal error", http.StatusInternalServerError)

@@ -18,6 +18,9 @@ var _ Repository = &RepositoryMock{}
 //
 // 		// make and configure a mocked Repository
 // 		mockedRepository := &RepositoryMock{
+// 			GetAllFunc: func() ([]*domain.Transaction, error) {
+// 				panic("mock out the GetAll method")
+// 			},
 // 			GetByIDFunc: func(s string) (*domain.Transaction, error) {
 // 				panic("mock out the GetByID method")
 // 			},
@@ -31,6 +34,9 @@ var _ Repository = &RepositoryMock{}
 //
 // 	}
 type RepositoryMock struct {
+	// GetAllFunc mocks the GetAll method.
+	GetAllFunc func() ([]*domain.Transaction, error)
+
 	// GetByIDFunc mocks the GetByID method.
 	GetByIDFunc func(s string) (*domain.Transaction, error)
 
@@ -39,6 +45,9 @@ type RepositoryMock struct {
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// GetAll holds details about calls to the GetAll method.
+		GetAll []struct {
+		}
 		// GetByID holds details about calls to the GetByID method.
 		GetByID []struct {
 			// S is the s argument value.
@@ -50,8 +59,35 @@ type RepositoryMock struct {
 			Transaction *domain.Transaction
 		}
 	}
+	lockGetAll  sync.RWMutex
 	lockGetByID sync.RWMutex
 	lockInsert  sync.RWMutex
+}
+
+// GetAll calls GetAllFunc.
+func (mock *RepositoryMock) GetAll() ([]*domain.Transaction, error) {
+	if mock.GetAllFunc == nil {
+		panic("RepositoryMock.GetAllFunc: method is nil but Repository.GetAll was just called")
+	}
+	callInfo := struct {
+	}{}
+	mock.lockGetAll.Lock()
+	mock.calls.GetAll = append(mock.calls.GetAll, callInfo)
+	mock.lockGetAll.Unlock()
+	return mock.GetAllFunc()
+}
+
+// GetAllCalls gets all the calls that were made to GetAll.
+// Check the length with:
+//     len(mockedRepository.GetAllCalls())
+func (mock *RepositoryMock) GetAllCalls() []struct {
+} {
+	var calls []struct {
+	}
+	mock.lockGetAll.RLock()
+	calls = mock.calls.GetAll
+	mock.lockGetAll.RUnlock()
+	return calls
 }
 
 // GetByID calls GetByIDFunc.

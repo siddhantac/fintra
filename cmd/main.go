@@ -67,10 +67,13 @@ func run() error {
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+	r.Use(middleware.SetHeader("content-type", "application/json"))
 	r.Get("/healthcheck", h.HealthCheck)
-	r.Post("/transactions", h.CreateTransaction)
-	r.Get("/transactions", h.GetAllTransactions)
-	r.Get("/transactions/{id}", h.GetTransactionByID)
+	r.Route("/transactions", func(r chi.Router) {
+		r.Post("/", h.CreateTransaction)
+		r.Get("/", h.GetAllTransactions)
+		r.Get("/{txnID}", h.GetTransactionByID)
+	})
 
 	var wg sync.WaitGroup
 	wg.Add(1)
@@ -85,7 +88,7 @@ func run() error {
 	defer cancel()
 
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Println("server shutdown: %v", err)
+		log.Printf("server shutdown: %v\n", err)
 	}
 
 	log.Println("stopped")
@@ -99,7 +102,7 @@ func startServer(wg *sync.WaitGroup, r http.Handler) *http.Server {
 		defer wg.Done()
 
 		if err := srv.ListenAndServe(); err != http.ErrServerClosed {
-			log.Println("ListenAndServe(): %v", err)
+			log.Printf("ListenAndServe(): %v\n", err)
 		}
 	}()
 

@@ -97,7 +97,7 @@ func TestGetTransactionByID(t *testing.T) {
 		wantRespBody string
 	}{
 		"valid expense request": {
-			wantCode: http.StatusOK,
+			wantCode: http.StatusCreated,
 			wantRespBody: `{
 				"id": "1",
 				"amount": 23,
@@ -161,7 +161,7 @@ func TestCreateTransaction(t *testing.T) {
 				"is_debit": true,
 				"account": "axis bank"
 			}`,
-			wantCode:     http.StatusOK,
+			wantCode:     http.StatusCreated,
 			serviceCalls: 1,
 			compareResp: func(t *testing.T, m map[string]interface{}) {
 				t.Helper()
@@ -220,9 +220,9 @@ func TestCreateTransaction(t *testing.T) {
 			w := httptest.NewRecorder()
 
 			mockSvc := &ServiceMock{
-				NewTransactionFunc: func(amount int, isDebit bool, date, category, transactionType, description, account string) (*domain.Transaction, error) {
+				NewTransactionFunc: func(amount float64, isDebit bool, date, category, transactionType, description, account string) (*domain.Transaction, error) {
 					d := time.Date(2021, 8, 17, 0, 0, 0, 0, time.UTC)
-					return domain.NewTransaction(amount, d, isDebit, category, transactionType, description, account)
+					return domain.NewTransaction(int(amount), d, isDebit, category, transactionType, description, account)
 				},
 			}
 			handler := NewHandler(mockSvc)

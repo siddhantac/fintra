@@ -1,6 +1,10 @@
 package repository
 
-import "github.com/siddhantac/fintra/domain"
+import (
+	"fmt"
+
+	"github.com/siddhantac/fintra/domain"
+)
 
 type Store interface {
 	Count() int
@@ -25,9 +29,14 @@ func (r *TransactionRepository) Insert(txn *domain.Transaction) error {
 }
 
 func (r *TransactionRepository) GetByID(id string) (*domain.Transaction, error) {
+	fmt.Println(">>>", id)
 	item, err := r.store.GetByID(id)
 	if err != nil {
 		return nil, err
+	}
+
+	if item == nil {
+		return nil, domain.ErrNotFound
 	}
 
 	txn := item.(*domain.Transaction)

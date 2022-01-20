@@ -11,6 +11,8 @@ import (
 )
 
 func TestBasicFlow(t *testing.T) {
+	var txnID string
+
 	t.Run("listAll", func(t *testing.T) {
 		url := baseURL + "/transactions"
 		t.Logf("calling %s", url)
@@ -39,15 +41,56 @@ func TestBasicFlow(t *testing.T) {
 
 		body, err := ioutil.ReadAll(resp.Body)
 		require.NoError(t, err)
+		require.Equal(t, http.StatusCreated, resp.StatusCode)
+
+		var m map[string]interface{}
+		err = json.Unmarshal(body, &m)
+		require.NoError(t, err)
+
+		txnID = m["id"].(string)
+		isEqualTransactionResponse(t, newTransactionResponse(), m, "id")
+	})
+
+	t.Run("list the new transaction", func(t *testing.T) {
+		url := baseURL + "/transactions/" + txnID
+		t.Logf("calling %s", url)
+
+		resp, err := http.Get(url)
+		require.NoError(t, err)
+
+		body, err := ioutil.ReadAll(resp.Body)
+		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, resp.StatusCode)
 
 		var m map[string]interface{}
 		err = json.Unmarshal(body, &m)
 		require.NoError(t, err)
-		require.Equal(t, []interface{}{}, m)
-
+		isEqualTransactionResponse(t, newTransactionResponse(), m, "id")
 	})
-	// list the new transaction
 	// create another transaction
 	// list all transactions, should be 2
+}
+
+func isEqualTransactionResponse(t *testing.T, expected, got map[string]interface{}, ignoreFields ...string) {
+	t.Helper()
+
+	// assert the ignored field is not empty, then clear it
+	for _, f := range ignoreFields {
+		require.NotEmpty(t, got[f])
+		got[f] = ""
+	}
+	require.Equal(t, expected, got)
+}
+
+func newTransactionResponse() map[string]interface{} {
+	return map[string]interface{}{
+		"account":     "awesome bank",
+		"amount":      1350.0,
+		"category":    "meals",
+		"date":        "2021-12-23",
+		"id":          "",
+		"description": "Tasty Restaurant",
+		"is_debit":    true,
+		"type":        "expense",
+	}
 }
