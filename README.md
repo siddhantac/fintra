@@ -23,7 +23,7 @@
     - [x] service layer
     - [x] http layer (WIP)
     - [x] wire everything together in main
-- [-] [WIP] http server
+- [x] http server
 -   - [x] add go-chi
 -   - [x] add logs
 - [ ] repository layer

@@ -1,7 +1,6 @@
 package store
 
 import (
-	"fmt"
 	"sync"
 )
 
@@ -38,7 +37,6 @@ func (ms *MemStore) Insert(id string, item interface{}) error {
 func (ms *MemStore) GetByID(id string) (interface{}, error) {
 	ms.mtx.Lock()
 	defer ms.mtx.Unlock()
-	fmt.Println(">>>", ms)
 	return ms.Items[id], nil
 }
 
