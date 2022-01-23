@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	"github.com/siddhantac/fintra/domain"
 )
 
@@ -98,10 +98,7 @@ func (h *Handler) GetAllTransactions(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetTransactionByID(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	txid := ctx.Value("txnID").(string)
 	id := chi.URLParam(r, "txnID")
-	fmt.Println(">> handlr", id, " // ", txid)
 	transaction, err := h.service.GetTransaction(id)
 	if err != nil {
 		log.Println(err)

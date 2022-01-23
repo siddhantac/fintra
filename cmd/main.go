@@ -10,14 +10,11 @@ import (
 	"sync"
 	"time"
 
-	// "time"
-
-	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/siddhantac/fintra/api"
 	"github.com/siddhantac/fintra/service"
 
-	// "github.com/siddhantac/fintra/domain"
 	"github.com/siddhantac/fintra/infra/store"
 	"github.com/siddhantac/fintra/repository"
 )
@@ -71,8 +68,8 @@ func run() error {
 	r.Get("/healthcheck", h.HealthCheck)
 	r.Route("/transactions", func(r chi.Router) {
 		r.Post("/", h.CreateTransaction)
-		r.Get("/", h.GetAllTransactions)
 		r.Get("/{txnID}", h.GetTransactionByID)
+		r.Get("/", h.GetAllTransactions)
 	})
 
 	var wg sync.WaitGroup

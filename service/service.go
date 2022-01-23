@@ -34,7 +34,6 @@ func NewService(repo Repository) *Service {
 }
 
 func (s *Service) GetTransaction(id string) (*domain.Transaction, error) {
-	fmt.Println(">> svc", id)
 	return s.repo.GetByID(id)
 }
 
