@@ -1,3 +1,20 @@
+# Build features
+
+- [x] create transactions
+- [x] list transactions, get transaction by id
+- [ ] account and category validation
+- [ ] data persistence using boltDB
+- [ ] add transfers - (2 transactions in DB)
+- [ ] report
+    - [ ] filter transactions by category
+    - [ ] filter transactions by account
+    - [ ] filter transactions by date range
+    - [ ] account balance
+      - [ ] requires starting balance
+      - [ ] current balance maybe cached in boltDB (using db transactions)
+
+---
+
 ## Brainstorming
 * add transactions
 * add budget per category

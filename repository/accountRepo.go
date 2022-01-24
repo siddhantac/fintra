@@ -6,7 +6,8 @@ import (
 
 type AccountStore interface {
 	Store
-	Update(id string, update interface{}) error
+	// TODO maybe needed in future
+	// Update(id string, update interface{}) error
 }
 
 type AccountRepo struct {
@@ -17,14 +18,33 @@ func NewAccountRepository(store AccountStore) *AccountRepo {
 	return &AccountRepo{store: store}
 }
 
-func (r *AccountRepo) GetByID(id string) (*domain.Account, error) {
-	item, err := r.store.GetByID(id)
+func (r *AccountRepo) Insert(account *domain.Account) error {
+	r.store.Insert(account.Name(), account)
+	return nil
+}
+
+func (r *AccountRepo) GetByID(name string) (*domain.Account, error) {
+	item, err := r.store.GetByID(name)
 	if err != nil {
 		return nil, err
 	}
 
+	if item == nil {
+		return nil, domain.ErrNotFound
+	}
+
 	acc := item.(*domain.Account)
 	return acc, nil
+}
+
+func (r *AccountRepo) GetAll() ([]*domain.Account, error) {
+	items := r.store.GetAll()
+	accs := make([]*domain.Account, 0, len(items))
+	for _, item := range items {
+		acc := item.(*domain.Account)
+		accs = append(accs, acc)
+	}
+	return accs, nil
 }
 
 /*
