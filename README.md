@@ -2,7 +2,7 @@
 
 - [x] create transactions
 - [x] list transactions, get transaction by id
-- [ ] account and category validation
+- [ ] account and category validation (simple hashmap based validation)
 - [ ] data persistence using boltDB
 - [ ] add transfers - (2 transactions in DB)
 - [ ] report
