@@ -67,8 +67,35 @@ func TestBasicFlow(t *testing.T) {
 		require.NoError(t, err)
 		isEqualTransactionResponse(t, newTransactionResponse(), m, "id")
 	})
-	// create another transaction
-	// list all transactions, should be 2
+
+	t.Run("list all transactions 2", func(t *testing.T) {
+		url := baseURL + "/transactions"
+		t.Logf("calling %s", url)
+
+		// create another transaction
+		reqBody := strings.NewReader(`{"amount": 13.5, "description": "Tasty Restaurant", "category": "meals", "date": "2021-12-23", "type": "expense", "is_debit": true, "account": "awesome bank"}`)
+		resp, err := http.Post(url, "application/json", reqBody)
+		require.NoError(t, err)
+		require.Equal(t, http.StatusCreated, resp.StatusCode)
+
+		resp, err = http.Get(url)
+		require.NoError(t, err)
+
+		require.Equal(t, http.StatusOK, resp.StatusCode)
+
+		body, err := ioutil.ReadAll(resp.Body)
+		require.NoError(t, err)
+
+		var m []interface{}
+		err = json.Unmarshal(body, &m)
+		require.NoError(t, err)
+		require.Len(t, m, 2)
+
+		m0 := m[0].(map[string]interface{})
+		m1 := m[1].(map[string]interface{})
+		isEqualTransactionResponse(t, newTransactionResponse(), m0, "id")
+		isEqualTransactionResponse(t, newTransactionResponse(), m1, "id")
+	})
 }
 
 func isEqualTransactionResponse(t *testing.T, expected, got map[string]interface{}, ignoreFields ...string) {
