@@ -1,4 +1,4 @@
-package api
+package rest
 
 import (
 	"encoding/json"
@@ -49,7 +49,7 @@ type Handler struct {
 	service Service
 }
 
-//go:generate moq -out api_mock_test.go . Service
+//go:generate moq -out handler_mock_test.go . Service
 type Service interface {
 	GetAllTransactions() ([]*domain.Transaction, error)
 	GetTransaction(id string) (*domain.Transaction, error)
