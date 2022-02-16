@@ -24,6 +24,7 @@ func TestGetAllTransactions(t *testing.T) {
 	tests := map[string]struct {
 		wantCode     int
 		wantRespBody string
+		mockSvc      *ServiceMock
 	}{
 		"valid expense request": {
 			wantCode: http.StatusOK,
@@ -47,15 +48,7 @@ func TestGetAllTransactions(t *testing.T) {
 				"is_debit": true,
 				"account": "credit card"
 			}]`,
-		},
-	}
-
-	for name, test := range tests {
-		t.Run(name, func(t *testing.T) {
-			r := httptest.NewRequest(http.MethodGet, "/transactions", nil)
-			w := httptest.NewRecorder()
-
-			mockSvc := &ServiceMock{
+			mockSvc: &ServiceMock{
 				GetAllTransactionsFunc: func() ([]*domain.Transaction, error) {
 					return []*domain.Transaction{
 						{
@@ -82,9 +75,16 @@ func TestGetAllTransactions(t *testing.T) {
 						},
 					}, nil
 				},
-			}
+			},
+		},
+	}
 
-			handler := NewHandler(mockSvc)
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			r := httptest.NewRequest(http.MethodGet, "/transactions", nil)
+			w := httptest.NewRecorder()
+
+			handler := NewHandler(test.mockSvc)
 			handler.GetAllTransactions(w, r)
 
 			assert.Equal(t, test.wantCode, w.Code)
@@ -97,6 +97,7 @@ func TestGetTransactionByID(t *testing.T) {
 	tests := map[string]struct {
 		wantCode     int
 		wantRespBody string
+		mockSvc      *ServiceMock
 	}{
 		"valid expense request": {
 			wantCode: http.StatusOK,
@@ -110,15 +111,7 @@ func TestGetTransactionByID(t *testing.T) {
 				"is_debit": true,
 				"account": "axis bank"
 			}`,
-		},
-	}
-
-	for name, test := range tests {
-		t.Run(name, func(t *testing.T) {
-			r := httptest.NewRequest(http.MethodGet, "/transactions/1", nil)
-			w := httptest.NewRecorder()
-
-			mockSvc := &ServiceMock{
+			mockSvc: &ServiceMock{
 				GetTransactionFunc: func(id string) (*domain.Transaction, error) {
 					return &domain.Transaction{
 						ID:          "1",
@@ -131,9 +124,16 @@ func TestGetTransactionByID(t *testing.T) {
 						Account:     "axis bank",
 					}, nil
 				},
-			}
+			},
+		},
+	}
 
-			handler := NewHandler(mockSvc)
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			r := httptest.NewRequest(http.MethodGet, "/transactions/1", nil)
+			w := httptest.NewRecorder()
+
+			handler := NewHandler(test.mockSvc)
 			handler.GetTransactionByID(w, r)
 
 			assert.Equal(t, test.wantCode, w.Code)
@@ -148,7 +148,6 @@ func TestCreateTransaction(t *testing.T) {
 		reqBody      string
 		wantCode     int
 		wantRespBody string
-		expectedResp map[string]interface{}
 		compareResp  func(t *testing.T, m map[string]interface{})
 		serviceCalls int
 	}{
@@ -189,8 +188,7 @@ func TestCreateTransaction(t *testing.T) {
 			reqBody: `{
 				"amount": 23,
 			}`,
-			wantCode:     http.StatusBadRequest,
-			expectedResp: map[string]interface{}{"error": "invalid JSON"},
+			wantCode: http.StatusBadRequest,
 			compareResp: func(t *testing.T, m map[string]interface{}) {
 				require.Contains(t, m, "error")
 				require.Contains(t, m["error"], "invalid json")
@@ -208,7 +206,6 @@ func TestCreateTransaction(t *testing.T) {
 			}`,
 			serviceCalls: 1,
 			wantCode:     http.StatusBadRequest,
-			expectedResp: map[string]interface{}{"error": "income must be credit"},
 			compareResp: func(t *testing.T, m map[string]interface{}) {
 				require.Contains(t, m, "error")
 				require.Equal(t, m["error"], "income must be credit")
