@@ -114,7 +114,7 @@ func isEqualTransactionResponse(t *testing.T, expected, got map[string]interface
 func newTransactionResponse() map[string]interface{} {
 	return map[string]interface{}{
 		"account":     "awesome bank",
-		"amount":      1350.0,
+		"amount":      13.50,
 		"category":    "meals",
 		"date":        "2021-12-23",
 		"id":          "",
