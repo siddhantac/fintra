@@ -9,18 +9,18 @@ import (
 )
 
 type Transaction struct {
-	IntAmount    int
-	ActualAmount float64
-	ID           string
-	Type         TransactionType
-	Currency     Currency
-	Description  string
-	Date         time.Time
-	Category     TransactionCategory
-	IsDebit      bool
-	Account      string // TODO use strongly typed accounts
-	Created      time.Time
-	Updated      time.Time
+	IntAmount   int
+	Amount      float64
+	ID          string
+	Type        TransactionType
+	Currency    Currency
+	Description string
+	Date        time.Time
+	Category    TransactionCategory
+	IsDebit     bool
+	Account     string // TODO use strongly typed accounts
+	Created     time.Time
+	Updated     time.Time
 }
 
 func NewTransaction(amount float64, date time.Time, isDebit bool, category, transactionType, description, account string) (*Transaction, error) {
@@ -28,17 +28,17 @@ func NewTransaction(amount float64, date time.Time, isDebit bool, category, tran
 	intAmount := int(amount * 100)
 
 	tr := &Transaction{
-		IntAmount:    intAmount,
-		ActualAmount: amount,
-		ID:           NewID(),
-		Type:         TransactionType(transactionType),
-		Category:     TransactionCategory(category),
-		Date:         date,
-		IsDebit:      isDebit,
-		Description:  description,
-		Currency:     DefaultCurrency,
-		Account:      account,
-		Created:      now,
+		IntAmount:   intAmount,
+		Amount:      amount,
+		ID:          NewID(),
+		Type:        TransactionType(transactionType),
+		Category:    TransactionCategory(category),
+		Date:        date,
+		IsDebit:     isDebit,
+		Description: description,
+		Currency:    DefaultCurrency,
+		Account:     account,
+		Created:     now,
 	}
 
 	if err := tr.validate(); err != nil {
@@ -49,7 +49,7 @@ func NewTransaction(amount float64, date time.Time, isDebit bool, category, tran
 }
 
 func (t *Transaction) String() string {
-	return fmt.Sprintf("%s\t%-10s\t%0.2f\t%s\t%s(%s)", t.Date.Format("02 Jan 2006"), t.Description, t.ActualAmount, t.Account, t.Category, t.Type)
+	return fmt.Sprintf("%s\t%-10s\t%0.2f\t%s\t%s(%s)", t.Date.Format("02 Jan 2006"), t.Description, t.Amount, t.Account, t.Category, t.Type)
 
 }
 
@@ -110,7 +110,7 @@ func (t *Transaction) validate() error {
 		return err
 	}
 
-	if t.ActualAmount < 0 {
+	if t.Amount < 0 {
 		return ErrIsNegative
 	}
 

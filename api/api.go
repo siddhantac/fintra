@@ -164,7 +164,7 @@ func newErrorResponse(msg string) string {
 func newTransactionResponse(t *domain.Transaction) TransactionResponse {
 	return TransactionResponse{
 		ID:     t.ID,
-		Amount: t.ActualAmount,
+		Amount: t.Amount,
 		Type:   string(t.Type),
 		// Currency:    string(transaction.Currency),
 		Description: t.Description,
