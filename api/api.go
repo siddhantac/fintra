@@ -24,9 +24,9 @@ type CreateTransactionRequest struct {
 }
 
 type TransactionResponse struct {
-	ID     string `json:"id"`
-	Amount int    `json:"amount"`
-	Type   string `json:"type"`
+	ID     string  `json:"id"`
+	Amount float64 `json:"amount"`
+	Type   string  `json:"type"`
 	// Currency    string `json:"currency"`
 	Description string `json:"description"`
 	Date        Time   `json:"date"`
@@ -164,7 +164,7 @@ func newErrorResponse(msg string) string {
 func newTransactionResponse(t *domain.Transaction) TransactionResponse {
 	return TransactionResponse{
 		ID:     t.ID,
-		Amount: t.Amount,
+		Amount: t.ActualAmount,
 		Type:   string(t.Type),
 		// Currency:    string(transaction.Currency),
 		Description: t.Description,

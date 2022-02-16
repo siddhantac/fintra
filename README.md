@@ -68,3 +68,4 @@
 	* assign budget per category 
 	* re-assign category budget by moving money around
 * system status should show balance based on starting balance & all transactions since then
+

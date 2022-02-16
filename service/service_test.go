@@ -40,7 +40,7 @@ func TestNewTransaction(t *testing.T) {
 	)
 	assert.NoError(t, err)
 	assert.Len(t, repo.InsertCalls(), 1)
-	assert.Equal(t, 12, txn.Amount)
+	assert.Equal(t, 12.00, txn.ActualAmount)
 	assert.Equal(t, true, txn.IsDebit)
 	assert.Equal(t, time.Date(2021, time.October, 11, 0, 0, 0, 0, time.UTC), txn.Date)
 	assert.Equal(t, domain.TrCategoryEntertainment, txn.Category)

@@ -39,7 +39,7 @@ func TestGetAllTransactions(t *testing.T) {
 			},
 			{
 				"id": "2",
-				"amount": 99,
+				"amount": 99.5,
 				"type": "expense",
 				"description": "mrt",
 				"date": "2021-08-20",
@@ -59,24 +59,26 @@ func TestGetAllTransactions(t *testing.T) {
 				GetAllTransactionsFunc: func() ([]*domain.Transaction, error) {
 					return []*domain.Transaction{
 						{
-							ID:          "1",
-							Amount:      23,
-							Type:        "expense",
-							Description: "dinner",
-							Date:        time.Date(2021, 8, 17, 0, 0, 0, 0, &time.Location{}),
-							Category:    "meals",
-							IsDebit:     true,
-							Account:     "axis bank",
+							ID:           "1",
+							ActualAmount: 23,
+							IntAmount:    2300,
+							Type:         "expense",
+							Description:  "dinner",
+							Date:         time.Date(2021, 8, 17, 0, 0, 0, 0, &time.Location{}),
+							Category:     "meals",
+							IsDebit:      true,
+							Account:      "axis bank",
 						},
 						{
-							ID:          "2",
-							Amount:      99,
-							Type:        "expense",
-							Description: "mrt",
-							Date:        time.Date(2021, 8, 20, 0, 0, 0, 0, &time.Location{}),
-							Category:    "transport",
-							IsDebit:     true,
-							Account:     "credit card",
+							ID:           "2",
+							ActualAmount: 99.5,
+							IntAmount:    9950,
+							Type:         "expense",
+							Description:  "mrt",
+							Date:         time.Date(2021, 8, 20, 0, 0, 0, 0, &time.Location{}),
+							Category:     "transport",
+							IsDebit:      true,
+							Account:      "credit card",
 						},
 					}, nil
 				},
@@ -97,7 +99,7 @@ func TestGetTransactionByID(t *testing.T) {
 		wantRespBody string
 	}{
 		"valid expense request": {
-			wantCode: http.StatusCreated,
+			wantCode: http.StatusOK,
 			wantRespBody: `{
 				"id": "1",
 				"amount": 23,
@@ -119,14 +121,14 @@ func TestGetTransactionByID(t *testing.T) {
 			mockSvc := &ServiceMock{
 				GetTransactionFunc: func(id string) (*domain.Transaction, error) {
 					return &domain.Transaction{
-						ID:          "1",
-						Amount:      23,
-						Type:        "expense",
-						Description: "dinner",
-						Date:        time.Date(2021, 8, 17, 0, 0, 0, 0, &time.Location{}),
-						Category:    "meals",
-						IsDebit:     true,
-						Account:     "axis bank",
+						ID:           "1",
+						ActualAmount: 23,
+						Type:         "expense",
+						Description:  "dinner",
+						Date:         time.Date(2021, 8, 17, 0, 0, 0, 0, &time.Location{}),
+						Category:     "meals",
+						IsDebit:      true,
+						Account:      "axis bank",
 					}, nil
 				},
 			}
@@ -191,7 +193,7 @@ func TestCreateTransaction(t *testing.T) {
 			expectedResp: map[string]interface{}{"error": "invalid JSON"},
 			compareResp: func(t *testing.T, m map[string]interface{}) {
 				require.Contains(t, m, "error")
-				require.Equal(t, m["error"], "invalid JSON")
+				require.Contains(t, m["error"], "invalid json")
 			},
 		},
 		"invalid request": {
@@ -222,7 +224,7 @@ func TestCreateTransaction(t *testing.T) {
 			mockSvc := &ServiceMock{
 				NewTransactionFunc: func(amount float64, isDebit bool, date, category, transactionType, description, account string) (*domain.Transaction, error) {
 					d := time.Date(2021, 8, 17, 0, 0, 0, 0, time.UTC)
-					return domain.NewTransaction(int(amount), d, isDebit, category, transactionType, description, account)
+					return domain.NewTransaction(amount, d, isDebit, category, transactionType, description, account)
 				},
 			}
 			handler := NewHandler(mockSvc)

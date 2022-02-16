@@ -4,18 +4,12 @@ import (
 	"github.com/siddhantac/fintra/domain"
 )
 
-type AccountStore interface {
-	Store
-	// TODO maybe needed in future
-	// Update(id string, update interface{}) error
-}
-
 type AccountRepo struct {
-	store AccountStore
+	store Store
 }
 
-func NewAccountRepository(store AccountStore) *AccountRepo {
-	return &AccountRepo{store: store}
+func NewAccountRepository(storage Store) *AccountRepo {
+	return &AccountRepo{store: storage}
 }
 
 func (r *AccountRepo) Insert(account *domain.Account) error {

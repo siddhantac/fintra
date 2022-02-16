@@ -11,9 +11,9 @@ import (
 func TestGetByID(t *testing.T) {
 	storage := store.NewMemStore()
 	item := &domain.Transaction{
-		ID:      "23",
-		Amount:  100,
-		Account: "Citibank",
+		ID:           "23",
+		ActualAmount: 100,
+		Account:      "Citibank",
 	}
 	storage.Items = map[string]interface{}{
 		"23": item,
