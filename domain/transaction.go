@@ -1,7 +1,6 @@
 package domain
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -95,14 +94,6 @@ const (
 	TrCategoryTravel        TransactionCategory = "travel"
 	TrCategoryUtilities     TransactionCategory = "utilities"
 	TrCategoryRefund        TransactionCategory = "refund"
-)
-
-var (
-	ErrMustBeDebit  error = errors.New("expense or investment must be debit")
-	ErrMustBeCredit error = errors.New("income must be credit")
-	ErrIsNegative   error = errors.New("transaction amount cannot be negative")
-	ErrEmpty              = func(s string) error { return fmt.Errorf("%s cannot be empty", s) }
-	ErrUnknownType  error = errors.New("unknown transaction type")
 )
 
 func (t *Transaction) validate() error {
