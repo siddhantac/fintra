@@ -41,14 +41,24 @@ func TestNewTransaction(t *testing.T) {
 		"Citibank",
 	)
 	assert.NoError(t, err)
+	expectedTxn := &domain.Transaction{
+		IntAmount:   1200,
+		Amount:      12,
+		IsDebit:     true,
+		Date:        time.Date(2021, time.October, 11, 0, 0, 0, 0, time.UTC),
+		Category:    domain.TrCategoryEntertainment,
+		Type:        domain.TrTypeExpense,
+		Description: "desc",
+		Account:     "Citibank",
+		Currency:    "sgd",
+	}
 	assert.Len(t, repo.InsertCalls(), 1)
-	assert.Equal(t, 12.00, txn.Amount)
-	assert.Equal(t, true, txn.IsDebit)
-	assert.Equal(t, time.Date(2021, time.October, 11, 0, 0, 0, 0, time.UTC), txn.Date)
-	assert.Equal(t, domain.TrCategoryEntertainment, txn.Category)
-	assert.Equal(t, domain.TrTypeExpense, txn.Type)
-	assert.Equal(t, "desc", txn.Description)
-	assert.Equal(t, "Citibank", txn.Account)
+
+	// don't compare date and ID as they are non-deterministic
+	txn.Created = time.Time{}
+	txn.Updated = time.Time{}
+	txn.ID = ""
+	require.Equal(t, expectedTxn, txn)
 }
 
 func TestTransactionValidation(t *testing.T) {

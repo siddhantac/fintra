@@ -47,10 +47,7 @@ func (s *Service) NewTransaction(amount float64, isDebit bool, date, category, t
 		return nil, fmt.Errorf("invalid date: %w", err)
 	}
 
-	transaction, err := domain.NewTransaction(amount, d, isDebit, category, transactionType, description, account)
-	if err != nil {
-		return nil, fmt.Errorf("domain.NewTransaction: %w", err)
-	}
+	transaction := domain.NewTransaction(amount, d, isDebit, category, transactionType, description, account)
 
 	if err := validateTransaction(*transaction); err != nil {
 		return nil, err

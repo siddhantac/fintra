@@ -22,11 +22,11 @@ type Transaction struct {
 	Updated     time.Time
 }
 
-func NewTransaction(amount float64, date time.Time, isDebit bool, category, transactionType, description, account string) (*Transaction, error) {
+func NewTransaction(amount float64, date time.Time, isDebit bool, category, transactionType, description, account string) *Transaction {
 	now := time.Now()
 	intAmount := int(amount * 100)
 
-	tr := &Transaction{
+	return &Transaction{
 		IntAmount:   intAmount,
 		Amount:      amount,
 		ID:          NewID(),
@@ -39,8 +39,6 @@ func NewTransaction(amount float64, date time.Time, isDebit bool, category, tran
 		Account:     account,
 		Created:     now,
 	}
-
-	return tr, nil
 }
 
 func (t *Transaction) String() string {
