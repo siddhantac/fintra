@@ -14,10 +14,10 @@ const (
 	dateLayout = "2006-01-02"
 )
 
-type Time string
+type RoundedTime string
 
-func NewTime(t time.Time) Time {
-	return Time(t.Round(time.Second).In(time.UTC).Format(dateLayout))
+func NewRoundedTime(t time.Time) RoundedTime {
+	return RoundedTime(t.Round(time.Second).In(time.UTC).Format(dateLayout))
 }
 
 type TransactionService struct {
