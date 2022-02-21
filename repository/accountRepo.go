@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/siddhantac/fintra/domain"
+	"github.com/siddhantac/fintra/model"
 )
 
 type AccountRepo struct {
@@ -12,30 +12,30 @@ func NewAccountRepository(storage Store) *AccountRepo {
 	return &AccountRepo{store: storage}
 }
 
-func (r *AccountRepo) Insert(account *domain.Account) error {
+func (r *AccountRepo) Insert(account *model.Account) error {
 	r.store.Insert(account.Name(), account)
 	return nil
 }
 
-func (r *AccountRepo) GetByID(name string) (*domain.Account, error) {
+func (r *AccountRepo) GetByID(name string) (*model.Account, error) {
 	item, err := r.store.GetByID(name)
 	if err != nil {
 		return nil, err
 	}
 
 	if item == nil {
-		return nil, domain.ErrNotFound
+		return nil, model.ErrNotFound
 	}
 
-	acc := item.(*domain.Account)
+	acc := item.(*model.Account)
 	return acc, nil
 }
 
-func (r *AccountRepo) GetAll() ([]*domain.Account, error) {
+func (r *AccountRepo) GetAll() ([]*model.Account, error) {
 	items := r.store.GetAll()
-	accs := make([]*domain.Account, 0, len(items))
+	accs := make([]*model.Account, 0, len(items))
 	for _, item := range items {
-		acc := item.(*domain.Account)
+		acc := item.(*model.Account)
 		accs = append(accs, acc)
 	}
 	return accs, nil

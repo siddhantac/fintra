@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/siddhantac/fintra/domain"
+	"github.com/siddhantac/fintra/model"
 )
 
 type TransactionRepository struct {
@@ -14,30 +14,30 @@ func NewTransactionRepository(storageEngine Store) *TransactionRepository {
 	}
 }
 
-func (r *TransactionRepository) Insert(txn *domain.Transaction) error {
+func (r *TransactionRepository) Insert(txn *model.Transaction) error {
 	r.store.Insert(txn.ID, txn)
 	return nil
 }
 
-func (r *TransactionRepository) GetByID(id string) (*domain.Transaction, error) {
+func (r *TransactionRepository) GetByID(id string) (*model.Transaction, error) {
 	item, err := r.store.GetByID(id)
 	if err != nil {
 		return nil, err
 	}
 
 	if item == nil {
-		return nil, domain.ErrNotFound
+		return nil, model.ErrNotFound
 	}
 
-	txn := item.(*domain.Transaction)
+	txn := item.(*model.Transaction)
 	return txn, nil
 }
 
-func (r *TransactionRepository) GetAll() ([]*domain.Transaction, error) {
+func (r *TransactionRepository) GetAll() ([]*model.Transaction, error) {
 	items := r.store.GetAll()
-	txns := make([]*domain.Transaction, 0, len(items))
+	txns := make([]*model.Transaction, 0, len(items))
 	for _, item := range items {
-		txn := item.(*domain.Transaction)
+		txn := item.(*model.Transaction)
 		txns = append(txns, txn)
 	}
 	return txns, nil

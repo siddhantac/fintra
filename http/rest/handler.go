@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/siddhantac/fintra/domain"
+	"github.com/siddhantac/fintra/model"
 )
 
 type CreateTransactionRequest struct {
@@ -37,8 +37,8 @@ type TransactionResponse struct {
 }
 
 // type Repository interface {
-//     Insert(*domain.Transaction) error
-//     GetByID(string) (*domain.Transaction, error)
+//     Insert(*model.Transaction) error
+//     GetByID(string) (*model.Transaction, error)
 // }
 
 type IDGenerator interface {
@@ -51,12 +51,12 @@ type Handler struct {
 
 //go:generate moq -out handler_mock_test.go . Service
 type Service interface {
-	GetAllTransactions() ([]*domain.Transaction, error)
-	GetTransaction(id string) (*domain.Transaction, error)
+	GetAllTransactions() ([]*model.Transaction, error)
+	GetTransaction(id string) (*model.Transaction, error)
 	NewTransaction(
 		amount float64,
 		isDebit bool,
-		date, category, transactionType, description, account string) (*domain.Transaction, error)
+		date, category, transactionType, description, account string) (*model.Transaction, error)
 }
 
 func NewHandler(service Service) *Handler {
@@ -102,7 +102,7 @@ func (h *Handler) GetTransactionByID(w http.ResponseWriter, r *http.Request) {
 	transaction, err := h.service.GetTransaction(id)
 	if err != nil {
 		log.Println(err)
-		if errors.Is(err, domain.ErrNotFound) {
+		if errors.Is(err, model.ErrNotFound) {
 			http.Error(w, newErrorResponse(err.Error()), http.StatusNotFound)
 			return
 		}
@@ -161,7 +161,7 @@ func newErrorResponse(msg string) string {
 	return string(b)
 }
 
-func newTransactionResponse(t *domain.Transaction) TransactionResponse {
+func newTransactionResponse(t *model.Transaction) TransactionResponse {
 	return TransactionResponse{
 		ID:     t.ID,
 		Amount: t.Amount,

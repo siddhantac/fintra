@@ -5,15 +5,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/siddhantac/fintra/domain"
+	"github.com/siddhantac/fintra/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGetTransaction(t *testing.T) {
 	repo := &RepositoryMock{
-		GetByIDFunc: func(id string) (*domain.Transaction, error) {
-			return &domain.Transaction{}, nil
+		GetByIDFunc: func(id string) (*model.Transaction, error) {
+			return &model.Transaction{}, nil
 		},
 	}
 	s := NewService(repo)
@@ -25,7 +25,7 @@ func TestGetTransaction(t *testing.T) {
 
 func TestNewTransaction(t *testing.T) {
 	repo := &RepositoryMock{
-		InsertFunc: func(_ *domain.Transaction) error {
+		InsertFunc: func(_ *model.Transaction) error {
 			return nil
 		},
 	}
@@ -35,19 +35,19 @@ func TestNewTransaction(t *testing.T) {
 		12,
 		true,
 		"2021-10-11",
-		string(domain.TrCategoryEntertainment),
-		string(domain.TrTypeExpense),
+		string(model.TrCategoryEntertainment),
+		string(model.TrTypeExpense),
 		"desc",
 		"Citibank",
 	)
 	assert.NoError(t, err)
-	expectedTxn := &domain.Transaction{
+	expectedTxn := &model.Transaction{
 		IntAmount:   1200,
 		Amount:      12,
 		IsDebit:     true,
 		Date:        time.Date(2021, time.October, 11, 0, 0, 0, 0, time.UTC),
-		Category:    domain.TrCategoryEntertainment,
-		Type:        domain.TrTypeExpense,
+		Category:    model.TrCategoryEntertainment,
+		Type:        model.TrTypeExpense,
 		Description: "desc",
 		Account:     "Citibank",
 		Currency:    "sgd",
@@ -65,76 +65,76 @@ func TestTransactionValidation(t *testing.T) {
 
 	tests := map[string]struct {
 		expectedErr error
-		txn         domain.Transaction
+		txn         model.Transaction
 	}{
 		"valid transaction": {
 			expectedErr: nil,
-			txn: domain.Transaction{
-				Type:        domain.TrTypeExpense,
+			txn: model.Transaction{
+				Type:        model.TrTypeExpense,
 				IsDebit:     true,
 				Amount:      10,
 				Currency:    "SGD",
 				Description: "some description",
 				Date:        time.Now(),
-				Category:    domain.TrCategoryEntertainment,
+				Category:    model.TrCategoryEntertainment,
 				Account:     "some account",
 			},
 		},
 		"empty transaction type": {
 			expectedErr: fmt.Errorf("transaction type cannot be empty"),
-			txn: domain.Transaction{
+			txn: model.Transaction{
 				Type:        "",
 				IsDebit:     true,
 				Amount:      10,
 				Currency:    "SGD",
 				Description: "some description",
 				Date:        time.Now(),
-				Category:    domain.TrCategoryEntertainment,
+				Category:    model.TrCategoryEntertainment,
 				Account:     "some account",
 			},
 		},
 		"invalid transaction type": {
 			expectedErr: fmt.Errorf("unknown transaction type: Loan"),
-			txn: domain.Transaction{
+			txn: model.Transaction{
 				Type:        "Loan",
 				IsDebit:     true,
 				Amount:      10,
 				Currency:    "SGD",
 				Description: "some description",
 				Date:        time.Now(),
-				Category:    domain.TrCategoryEntertainment,
+				Category:    model.TrCategoryEntertainment,
 				Account:     "some account",
 			},
 		},
 		"currency cannot be empty": {
 			expectedErr: fmt.Errorf("currency cannot be empty"),
-			txn: domain.Transaction{
+			txn: model.Transaction{
 				Type:        "expense",
 				IsDebit:     true,
 				Amount:      10,
 				Currency:    "",
 				Description: "some description",
 				Date:        time.Now(),
-				Category:    domain.TrCategoryEntertainment,
+				Category:    model.TrCategoryEntertainment,
 				Account:     "some account",
 			},
 		},
 		"date cannot be empty": {
 			expectedErr: fmt.Errorf("date cannot be empty"),
-			txn: domain.Transaction{
+			txn: model.Transaction{
 				Type:        "expense",
 				IsDebit:     true,
 				Amount:      10,
 				Currency:    "SGD",
 				Description: "some description",
 				Date:        time.Time{},
-				Category:    domain.TrCategoryEntertainment,
+				Category:    model.TrCategoryEntertainment,
 				Account:     "some account",
 			},
 		},
 		"category cannot be empty": {
 			expectedErr: fmt.Errorf("category cannot be empty"),
-			txn: domain.Transaction{
+			txn: model.Transaction{
 				Type:        "expense",
 				IsDebit:     true,
 				Amount:      10,
@@ -147,14 +147,14 @@ func TestTransactionValidation(t *testing.T) {
 		},
 		"account cannot be empty": {
 			expectedErr: fmt.Errorf("account cannot be empty"),
-			txn: domain.Transaction{
+			txn: model.Transaction{
 				Type:        "expense",
 				IsDebit:     true,
 				Amount:      10,
 				Currency:    "SGD",
 				Description: "some description",
 				Date:        time.Now(),
-				Category:    domain.TrCategoryEntertainment,
+				Category:    model.TrCategoryEntertainment,
 				Account:     "",
 			},
 		},

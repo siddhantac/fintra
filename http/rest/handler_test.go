@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/siddhantac/fintra/domain"
+	"github.com/siddhantac/fintra/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -49,8 +49,8 @@ func TestGetAllTransactions(t *testing.T) {
 				"account": "credit card"
 			}]`,
 			mockSvc: &ServiceMock{
-				GetAllTransactionsFunc: func() ([]*domain.Transaction, error) {
-					return []*domain.Transaction{
+				GetAllTransactionsFunc: func() ([]*model.Transaction, error) {
+					return []*model.Transaction{
 						{
 							ID:          "1",
 							Amount:      23,
@@ -112,8 +112,8 @@ func TestGetTransactionByID(t *testing.T) {
 				"account": "axis bank"
 			}`,
 			mockSvc: &ServiceMock{
-				GetTransactionFunc: func(id string) (*domain.Transaction, error) {
-					return &domain.Transaction{
+				GetTransactionFunc: func(id string) (*model.Transaction, error) {
+					return &model.Transaction{
 						ID:          "1",
 						Amount:      23,
 						Type:        "expense",
@@ -202,9 +202,9 @@ func TestCreateTransaction(t *testing.T) {
 			w := httptest.NewRecorder()
 
 			mockSvc := &ServiceMock{
-				NewTransactionFunc: func(amount float64, isDebit bool, date, category, transactionType, description, account string) (*domain.Transaction, error) {
+				NewTransactionFunc: func(amount float64, isDebit bool, date, category, transactionType, description, account string) (*model.Transaction, error) {
 					d := time.Date(2021, 8, 17, 0, 0, 0, 0, time.UTC)
-					return domain.NewTransaction("1", amount, d, isDebit, category, transactionType, description, account), nil
+					return model.NewTransaction("1", amount, d, isDebit, category, transactionType, description, account), nil
 				},
 			}
 			handler := NewHandler(mockSvc)

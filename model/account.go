@@ -1,4 +1,4 @@
-package domain
+package model
 
 import "time"
 
@@ -34,7 +34,7 @@ func (a *Account) CurrentBalance() int {
 	return a.currentBalance
 }
 
-func (a *Account) Credit(amount int) int {
+/* func (a *Account) Credit(amount int) int {
 	a.currentBalance += amount
 	return a.CurrentBalance()
 }
@@ -42,4 +42,4 @@ func (a *Account) Credit(amount int) int {
 func (a *Account) Debit(amount int) int {
 	a.currentBalance -= amount
 	return a.CurrentBalance()
-}
+} */

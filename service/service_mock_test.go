@@ -4,7 +4,7 @@
 package service
 
 import (
-	"github.com/siddhantac/fintra/domain"
+	"github.com/siddhantac/fintra/model"
 	"sync"
 )
 
@@ -18,13 +18,13 @@ var _ Repository = &RepositoryMock{}
 //
 // 		// make and configure a mocked Repository
 // 		mockedRepository := &RepositoryMock{
-// 			GetAllFunc: func() ([]*domain.Transaction, error) {
+// 			GetAllFunc: func() ([]*model.Transaction, error) {
 // 				panic("mock out the GetAll method")
 // 			},
-// 			GetByIDFunc: func(s string) (*domain.Transaction, error) {
+// 			GetByIDFunc: func(s string) (*model.Transaction, error) {
 // 				panic("mock out the GetByID method")
 // 			},
-// 			InsertFunc: func(transaction *domain.Transaction) error {
+// 			InsertFunc: func(transaction *model.Transaction) error {
 // 				panic("mock out the Insert method")
 // 			},
 // 		}
@@ -35,13 +35,13 @@ var _ Repository = &RepositoryMock{}
 // 	}
 type RepositoryMock struct {
 	// GetAllFunc mocks the GetAll method.
-	GetAllFunc func() ([]*domain.Transaction, error)
+	GetAllFunc func() ([]*model.Transaction, error)
 
 	// GetByIDFunc mocks the GetByID method.
-	GetByIDFunc func(s string) (*domain.Transaction, error)
+	GetByIDFunc func(s string) (*model.Transaction, error)
 
 	// InsertFunc mocks the Insert method.
-	InsertFunc func(transaction *domain.Transaction) error
+	InsertFunc func(transaction *model.Transaction) error
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -56,7 +56,7 @@ type RepositoryMock struct {
 		// Insert holds details about calls to the Insert method.
 		Insert []struct {
 			// Transaction is the transaction argument value.
-			Transaction *domain.Transaction
+			Transaction *model.Transaction
 		}
 	}
 	lockGetAll  sync.RWMutex
@@ -65,7 +65,7 @@ type RepositoryMock struct {
 }
 
 // GetAll calls GetAllFunc.
-func (mock *RepositoryMock) GetAll() ([]*domain.Transaction, error) {
+func (mock *RepositoryMock) GetAll() ([]*model.Transaction, error) {
 	if mock.GetAllFunc == nil {
 		panic("RepositoryMock.GetAllFunc: method is nil but Repository.GetAll was just called")
 	}
@@ -91,7 +91,7 @@ func (mock *RepositoryMock) GetAllCalls() []struct {
 }
 
 // GetByID calls GetByIDFunc.
-func (mock *RepositoryMock) GetByID(s string) (*domain.Transaction, error) {
+func (mock *RepositoryMock) GetByID(s string) (*model.Transaction, error) {
 	if mock.GetByIDFunc == nil {
 		panic("RepositoryMock.GetByIDFunc: method is nil but Repository.GetByID was just called")
 	}
@@ -122,12 +122,12 @@ func (mock *RepositoryMock) GetByIDCalls() []struct {
 }
 
 // Insert calls InsertFunc.
-func (mock *RepositoryMock) Insert(transaction *domain.Transaction) error {
+func (mock *RepositoryMock) Insert(transaction *model.Transaction) error {
 	if mock.InsertFunc == nil {
 		panic("RepositoryMock.InsertFunc: method is nil but Repository.Insert was just called")
 	}
 	callInfo := struct {
-		Transaction *domain.Transaction
+		Transaction *model.Transaction
 	}{
 		Transaction: transaction,
 	}
@@ -141,10 +141,10 @@ func (mock *RepositoryMock) Insert(transaction *domain.Transaction) error {
 // Check the length with:
 //     len(mockedRepository.InsertCalls())
 func (mock *RepositoryMock) InsertCalls() []struct {
-	Transaction *domain.Transaction
+	Transaction *model.Transaction
 } {
 	var calls []struct {
-		Transaction *domain.Transaction
+		Transaction *model.Transaction
 	}
 	mock.lockInsert.RLock()
 	calls = mock.calls.Insert

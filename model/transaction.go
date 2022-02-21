@@ -1,4 +1,4 @@
-package domain
+package model
 
 import (
 	"fmt"
@@ -22,10 +22,8 @@ type Transaction struct {
 
 func NewTransaction(id string, amount float64, date time.Time, isDebit bool, category, transactionType, description, account string) *Transaction {
 	now := time.Now()
-	intAmount := int(amount * 100)
-
 	return &Transaction{
-		IntAmount:   intAmount,
+		IntAmount:   int(amount * 100),
 		Amount:      amount,
 		ID:          id,
 		Type:        TransactionType(transactionType),

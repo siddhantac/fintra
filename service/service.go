@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/siddhantac/fintra/domain"
+	"github.com/siddhantac/fintra/model"
 	"github.com/siddhantac/fintra/infra/uid"
 )
 
@@ -25,30 +25,30 @@ type Service struct {
 }
 
 type Repository interface {
-	Insert(*domain.Transaction) error
-	GetByID(string) (*domain.Transaction, error)
-	GetAll() ([]*domain.Transaction, error)
+	Insert(*model.Transaction) error
+	GetByID(string) (*model.Transaction, error)
+	GetAll() ([]*model.Transaction, error)
 }
 
 func NewService(repo Repository) *Service {
 	return &Service{repo: repo}
 }
 
-func (s *Service) GetTransaction(id string) (*domain.Transaction, error) {
+func (s *Service) GetTransaction(id string) (*model.Transaction, error) {
 	return s.repo.GetByID(id)
 }
 
-func (s *Service) GetAllTransactions() ([]*domain.Transaction, error) {
+func (s *Service) GetAllTransactions() ([]*model.Transaction, error) {
 	return s.repo.GetAll()
 }
 
-func (s *Service) NewTransaction(amount float64, isDebit bool, date, category, transactionType, description, account string) (*domain.Transaction, error) {
+func (s *Service) NewTransaction(amount float64, isDebit bool, date, category, transactionType, description, account string) (*model.Transaction, error) {
 	d, err := time.Parse(dateLayout, date)
 	if err != nil {
 		return nil, fmt.Errorf("invalid date: %w", err)
 	}
 
-	transaction := domain.NewTransaction(uid.NewID(), amount, d, isDebit, category, transactionType, description, account)
+	transaction := model.NewTransaction(uid.NewID(), amount, d, isDebit, category, transactionType, description, account)
 
 	if err := validateTransaction(*transaction); err != nil {
 		return nil, err
@@ -61,51 +61,51 @@ func (s *Service) NewTransaction(amount float64, isDebit bool, date, category, t
 	return transaction, nil
 }
 
-func validateTransaction(txn domain.Transaction) error {
+func validateTransaction(txn model.Transaction) error {
 	if err := validateType(txn.Type, txn.IsDebit); err != nil {
 		return err
 	}
 
 	if txn.Currency == "" {
-		return domain.ErrEmpty("currency")
+		return model.ErrEmpty("currency")
 	}
 
 	if txn.Description == "" {
-		return domain.ErrEmpty("description")
+		return model.ErrEmpty("description")
 	}
 
 	if txn.Date.IsZero() {
-		return domain.ErrEmpty("date")
+		return model.ErrEmpty("date")
 	}
 
 	if txn.Category == "" {
-		return domain.ErrEmpty("category")
+		return model.ErrEmpty("category")
 	}
 
 	if txn.Account == "" {
-		return domain.ErrEmpty("account")
+		return model.ErrEmpty("account")
 	}
 
 	return nil
 }
 
-func validateType(txTyp domain.TransactionType, isDebit bool) error {
+func validateType(txTyp model.TransactionType, isDebit bool) error {
 	if txTyp == "" {
-		return domain.ErrEmpty("transaction type")
+		return model.ErrEmpty("transaction type")
 	}
 
-	if _, ok := domain.TransactionTypes[txTyp]; !ok {
-		return domain.ErrUnknownTransactionType(string(txTyp))
+	if _, ok := model.TransactionTypes[txTyp]; !ok {
+		return model.ErrUnknownTransactionType(string(txTyp))
 	}
 
 	switch txTyp {
-	case domain.TrTypeExpense, domain.TrTypeInvestment:
+	case model.TrTypeExpense, model.TrTypeInvestment:
 		if !isDebit {
-			return domain.ErrMustBeDebit
+			return model.ErrMustBeDebit
 		}
-	case domain.TrTypeIncome:
+	case model.TrTypeIncome:
 		if isDebit {
-			return domain.ErrMustBeCredit
+			return model.ErrMustBeCredit
 		}
 	}
 	return nil

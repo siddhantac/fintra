@@ -4,7 +4,7 @@
 package rest
 
 import (
-	"github.com/siddhantac/fintra/domain"
+	"github.com/siddhantac/fintra/model"
 	"sync"
 )
 
@@ -18,13 +18,13 @@ var _ Service = &ServiceMock{}
 //
 // 		// make and configure a mocked Service
 // 		mockedService := &ServiceMock{
-// 			GetAllTransactionsFunc: func() ([]*domain.Transaction, error) {
+// 			GetAllTransactionsFunc: func() ([]*model.Transaction, error) {
 // 				panic("mock out the GetAllTransactions method")
 // 			},
-// 			GetTransactionFunc: func(id string) (*domain.Transaction, error) {
+// 			GetTransactionFunc: func(id string) (*model.Transaction, error) {
 // 				panic("mock out the GetTransaction method")
 // 			},
-// 			NewTransactionFunc: func(amount float64, isDebit bool, date string, category string, transactionType string, description string, account string) (*domain.Transaction, error) {
+// 			NewTransactionFunc: func(amount float64, isDebit bool, date string, category string, transactionType string, description string, account string) (*model.Transaction, error) {
 // 				panic("mock out the NewTransaction method")
 // 			},
 // 		}
@@ -35,13 +35,13 @@ var _ Service = &ServiceMock{}
 // 	}
 type ServiceMock struct {
 	// GetAllTransactionsFunc mocks the GetAllTransactions method.
-	GetAllTransactionsFunc func() ([]*domain.Transaction, error)
+	GetAllTransactionsFunc func() ([]*model.Transaction, error)
 
 	// GetTransactionFunc mocks the GetTransaction method.
-	GetTransactionFunc func(id string) (*domain.Transaction, error)
+	GetTransactionFunc func(id string) (*model.Transaction, error)
 
 	// NewTransactionFunc mocks the NewTransaction method.
-	NewTransactionFunc func(amount float64, isDebit bool, date string, category string, transactionType string, description string, account string) (*domain.Transaction, error)
+	NewTransactionFunc func(amount float64, isDebit bool, date string, category string, transactionType string, description string, account string) (*model.Transaction, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -77,7 +77,7 @@ type ServiceMock struct {
 }
 
 // GetAllTransactions calls GetAllTransactionsFunc.
-func (mock *ServiceMock) GetAllTransactions() ([]*domain.Transaction, error) {
+func (mock *ServiceMock) GetAllTransactions() ([]*model.Transaction, error) {
 	if mock.GetAllTransactionsFunc == nil {
 		panic("ServiceMock.GetAllTransactionsFunc: method is nil but Service.GetAllTransactions was just called")
 	}
@@ -103,7 +103,7 @@ func (mock *ServiceMock) GetAllTransactionsCalls() []struct {
 }
 
 // GetTransaction calls GetTransactionFunc.
-func (mock *ServiceMock) GetTransaction(id string) (*domain.Transaction, error) {
+func (mock *ServiceMock) GetTransaction(id string) (*model.Transaction, error) {
 	if mock.GetTransactionFunc == nil {
 		panic("ServiceMock.GetTransactionFunc: method is nil but Service.GetTransaction was just called")
 	}
@@ -134,7 +134,7 @@ func (mock *ServiceMock) GetTransactionCalls() []struct {
 }
 
 // NewTransaction calls NewTransactionFunc.
-func (mock *ServiceMock) NewTransaction(amount float64, isDebit bool, date string, category string, transactionType string, description string, account string) (*domain.Transaction, error) {
+func (mock *ServiceMock) NewTransaction(amount float64, isDebit bool, date string, category string, transactionType string, description string, account string) (*model.Transaction, error) {
 	if mock.NewTransactionFunc == nil {
 		panic("ServiceMock.NewTransactionFunc: method is nil but Service.NewTransaction was just called")
 	}

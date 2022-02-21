@@ -3,15 +3,15 @@ package repository
 import (
 	"testing"
 
-	"github.com/siddhantac/fintra/domain"
+	"github.com/siddhantac/fintra/model"
 	"github.com/siddhantac/fintra/infra/store"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGetAccountDetails(t *testing.T) {
 	storage := store.NewMemStore()
-	expectedAcc := domain.NewAccount("Citibank", 150)
-	// expectedAcc := &domain.Account{
+	expectedAcc := model.NewAccount("Citibank", 150)
+	// expectedAcc := &model.Account{
 	// 	ID:              "AccID",
 	// 	Balance:         150,
 	// 	StartingBalance: 15,
@@ -33,7 +33,7 @@ func TestGetAccountDetails(t *testing.T) {
 /*
 func TestCreditToAccount(t *testing.T) {
 	storage := store.NewMemStore()
-	initialState := &domain.Account{
+	initialState := &model.Account{
 		ID:              "AccID",
 		Balance:         150,
 		StartingBalance: 15,
@@ -55,7 +55,7 @@ func TestCreditToAccount(t *testing.T) {
 
 func TestDebitFromAccount(t *testing.T) {
 	storage := store.NewMemStore()
-	initialState := &domain.Account{
+	initialState := &model.Account{
 		ID:              "AccID",
 		Balance:         150,
 		StartingBalance: 15,

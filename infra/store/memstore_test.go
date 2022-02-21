@@ -10,7 +10,7 @@ func TestGetAll(t *testing.T) {
 	ms := NewMemStore()
 	assert.Equal(t, 0, ms.Count())
 
-	// tx, err := domain.NewTransaction(23, time.Now(), true, string(domain.TrCategoryEntertainment), string(domain.TrTypeExpense), "desc", "Citibank")
+	// tx, err := model.NewTransaction(23, time.Now(), true, string(model.TrCategoryEntertainment), string(model.TrTypeExpense), "desc", "Citibank")
 	// assert.NoError(t, err)
 	item := 23
 	ms.Insert("id23", item)
@@ -21,7 +21,7 @@ func TestGetAll(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, item, gotItem)
 
-	// tx2, err := domain.NewTransaction(11, time.Now(), true, string(domain.TrCategoryMeals), string(domain.TrTypeExpense), "desc", "Citibank")
+	// tx2, err := model.NewTransaction(11, time.Now(), true, string(model.TrCategoryMeals), string(model.TrTypeExpense), "desc", "Citibank")
 	// assert.NoError(t, err)
 	city := map[string]interface{}{
 		"id":   23,

@@ -22,19 +22,19 @@ import (
 // func main() {
 // 	ms := store.NewMemStore()
 
-// 	tx, err := domain.NewTransaction(23, time.Now(), true, string(domain.TrCategoryEntertainment), string(domain.TrTypeExpense), "movies", "Citibank")
+// 	tx, err := model.NewTransaction(23, time.Now(), true, string(model.TrCategoryEntertainment), string(model.TrTypeExpense), "movies", "Citibank")
 // 	if err != nil {
 // 		log.Fatal(err)
 // 	}
 // 	ms.Insert(tx.ID, tx)
 
-// 	tx2, err := domain.NewTransaction(11, time.Now(), true, string(domain.TrCategoryMeals), string(domain.TrTypeExpense), "foodpanda", "Citibank")
+// 	tx2, err := model.NewTransaction(11, time.Now(), true, string(model.TrCategoryMeals), string(model.TrTypeExpense), "foodpanda", "Citibank")
 // 	if err != nil {
 // 		log.Fatal(err)
 // 	}
 // 	ms.Insert(tx2.ID, tx2)
 
-// 	tx3, err := domain.NewTransaction(12, time.Now(), true, string(domain.TrCategoryMeals), string(domain.TrTypeExpense), "deliveroo", "Citibank")
+// 	tx3, err := model.NewTransaction(12, time.Now(), true, string(model.TrCategoryMeals), string(model.TrTypeExpense), "deliveroo", "Citibank")
 // 	if err != nil {
 // 		log.Fatal(err)
 // 	}
