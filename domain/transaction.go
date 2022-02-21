@@ -40,10 +40,6 @@ func NewTransaction(amount float64, date time.Time, isDebit bool, category, tran
 		Created:     now,
 	}
 
-	if err := tr.validate(); err != nil {
-		return nil, err
-	}
-
 	return tr, nil
 }
 
@@ -62,7 +58,7 @@ const (
 	TrTypeInvestment TransactionType = "investment"
 )
 
-var transactionTypes = map[TransactionType]struct{}{
+var TransactionTypes = map[TransactionType]struct{}{
 	TrTypeExpense:    {},
 	TrTypeIncome:     {},
 	TrTypeTransfer:   {},
@@ -95,60 +91,6 @@ const (
 	TrCategoryUtilities     TransactionCategory = "utilities"
 	TrCategoryRefund        TransactionCategory = "refund"
 )
-
-func (t *Transaction) validate() error {
-	if err := validateType(t.Type, t.IsDebit); err != nil {
-		return err
-	}
-
-	if t.Amount < 0 {
-		return ErrIsNegative
-	}
-
-	if t.Currency == "" {
-		return ErrEmpty("currency")
-	}
-
-	if t.Description == "" {
-		return ErrEmpty("description")
-	}
-
-	if t.Date.IsZero() {
-		return ErrEmpty("date")
-	}
-
-	if t.Category == "" {
-		return ErrEmpty("category")
-	}
-
-	if t.Account == "" {
-		return ErrEmpty("account")
-	}
-
-	return nil
-}
-
-func validateType(ty TransactionType, isDebit bool) error {
-	if ty == "" {
-		return ErrEmpty("transaction type")
-	}
-
-	if _, ok := transactionTypes[ty]; !ok {
-		return fmt.Errorf("%s: %w", ty, ErrUnknownType)
-	}
-
-	switch ty {
-	case TrTypeExpense, TrTypeInvestment:
-		if !isDebit {
-			return ErrMustBeDebit
-		}
-	case TrTypeIncome:
-		if isDebit {
-			return ErrMustBeCredit
-		}
-	}
-	return nil
-}
 
 func NewID() string {
 	return ksuid.New().String()
