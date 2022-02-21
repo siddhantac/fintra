@@ -1,4 +1,4 @@
-package transaction
+package service
 
 import (
 	"fmt"
@@ -16,7 +16,7 @@ func TestGetTransaction(t *testing.T) {
 			return &model.Transaction{}, nil
 		},
 	}
-	s := NewService(repo, nil)
+	s := NewTransactionService(repo, nil)
 
 	_, err := s.GetTransaction("x")
 	assert.NoError(t, err)
@@ -35,7 +35,7 @@ func TestNewTransaction(t *testing.T) {
 		},
 	}
 
-	s := NewService(txnRepo, accRepo)
+	s := NewTransactionService(txnRepo, accRepo)
 
 	txn, err := s.NewTransaction(
 		12,

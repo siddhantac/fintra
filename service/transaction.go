@@ -1,4 +1,4 @@
-package transaction
+package service
 
 //go:generate moq -out transaction_mock_test.go . TransactionRepository AccountRepository
 
@@ -20,7 +20,7 @@ func NewTime(t time.Time) Time {
 	return Time(t.Round(time.Second).In(time.UTC).Format(dateLayout))
 }
 
-type Service struct {
+type TransactionService struct {
 	txnRepo TransactionRepository
 	accRepo AccountRepository
 }
@@ -35,22 +35,22 @@ type AccountRepository interface {
 	GetByID(string) (*model.Account, error)
 }
 
-func NewService(txnRepo TransactionRepository, accRepo AccountRepository) *Service {
-	return &Service{
+func NewTransactionService(txnRepo TransactionRepository, accRepo AccountRepository) *TransactionService {
+	return &TransactionService{
 		txnRepo: txnRepo,
 		accRepo: accRepo,
 	}
 }
 
-func (s *Service) GetTransaction(id string) (*model.Transaction, error) {
+func (s *TransactionService) GetTransaction(id string) (*model.Transaction, error) {
 	return s.txnRepo.GetByID(id)
 }
 
-func (s *Service) GetAllTransactions() ([]*model.Transaction, error) {
+func (s *TransactionService) GetAllTransactions() ([]*model.Transaction, error) {
 	return s.txnRepo.GetAll()
 }
 
-func (s *Service) NewTransaction(amount float64, isDebit bool, date, category, transactionType, description, account string) (*model.Transaction, error) {
+func (s *TransactionService) NewTransaction(amount float64, isDebit bool, date, category, transactionType, description, account string) (*model.Transaction, error) {
 	d, err := time.Parse(dateLayout, date)
 	if err != nil {
 		return nil, fmt.Errorf("invalid date: %w", err)
