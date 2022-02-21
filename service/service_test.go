@@ -11,12 +11,12 @@ import (
 )
 
 func TestGetTransaction(t *testing.T) {
-	repo := &RepositoryMock{
+	repo := &TransactionRepositoryMock{
 		GetByIDFunc: func(id string) (*model.Transaction, error) {
 			return &model.Transaction{}, nil
 		},
 	}
-	s := NewService(repo)
+	s := NewService(repo, nil)
 
 	_, err := s.GetTransaction("x")
 	assert.NoError(t, err)
@@ -24,12 +24,18 @@ func TestGetTransaction(t *testing.T) {
 }
 
 func TestNewTransaction(t *testing.T) {
-	repo := &RepositoryMock{
+	txnRepo := &TransactionRepositoryMock{
 		InsertFunc: func(_ *model.Transaction) error {
 			return nil
 		},
 	}
-	s := NewService(repo)
+	accRepo := &AccountRepositoryMock{
+		GetByNameFunc: func(_ string) (*model.Account, error) {
+			return nil, nil
+		},
+	}
+
+	s := NewService(txnRepo, accRepo)
 
 	txn, err := s.NewTransaction(
 		12,
@@ -52,7 +58,8 @@ func TestNewTransaction(t *testing.T) {
 		Account:     "Citibank",
 		Currency:    "sgd",
 	}
-	assert.Len(t, repo.InsertCalls(), 1)
+	require.Len(t, txnRepo.InsertCalls(), 1)
+	require.Len(t, accRepo.GetByNameCalls(), 1)
 
 	// don't compare date and ID as they are non-deterministic
 	txn.Created = time.Time{}

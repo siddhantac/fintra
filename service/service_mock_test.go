@@ -8,16 +8,16 @@ import (
 	"sync"
 )
 
-// Ensure, that RepositoryMock does implement Repository.
+// Ensure, that TransactionRepositoryMock does implement TransactionRepository.
 // If this is not the case, regenerate this file with moq.
-var _ Repository = &RepositoryMock{}
+var _ TransactionRepository = &TransactionRepositoryMock{}
 
-// RepositoryMock is a mock implementation of Repository.
+// TransactionRepositoryMock is a mock implementation of TransactionRepository.
 //
-// 	func TestSomethingThatUsesRepository(t *testing.T) {
+// 	func TestSomethingThatUsesTransactionRepository(t *testing.T) {
 //
-// 		// make and configure a mocked Repository
-// 		mockedRepository := &RepositoryMock{
+// 		// make and configure a mocked TransactionRepository
+// 		mockedTransactionRepository := &TransactionRepositoryMock{
 // 			GetAllFunc: func() ([]*model.Transaction, error) {
 // 				panic("mock out the GetAll method")
 // 			},
@@ -29,11 +29,11 @@ var _ Repository = &RepositoryMock{}
 // 			},
 // 		}
 //
-// 		// use mockedRepository in code that requires Repository
+// 		// use mockedTransactionRepository in code that requires TransactionRepository
 // 		// and then make assertions.
 //
 // 	}
-type RepositoryMock struct {
+type TransactionRepositoryMock struct {
 	// GetAllFunc mocks the GetAll method.
 	GetAllFunc func() ([]*model.Transaction, error)
 
@@ -65,9 +65,9 @@ type RepositoryMock struct {
 }
 
 // GetAll calls GetAllFunc.
-func (mock *RepositoryMock) GetAll() ([]*model.Transaction, error) {
+func (mock *TransactionRepositoryMock) GetAll() ([]*model.Transaction, error) {
 	if mock.GetAllFunc == nil {
-		panic("RepositoryMock.GetAllFunc: method is nil but Repository.GetAll was just called")
+		panic("TransactionRepositoryMock.GetAllFunc: method is nil but TransactionRepository.GetAll was just called")
 	}
 	callInfo := struct {
 	}{}
@@ -79,8 +79,8 @@ func (mock *RepositoryMock) GetAll() ([]*model.Transaction, error) {
 
 // GetAllCalls gets all the calls that were made to GetAll.
 // Check the length with:
-//     len(mockedRepository.GetAllCalls())
-func (mock *RepositoryMock) GetAllCalls() []struct {
+//     len(mockedTransactionRepository.GetAllCalls())
+func (mock *TransactionRepositoryMock) GetAllCalls() []struct {
 } {
 	var calls []struct {
 	}
@@ -91,9 +91,9 @@ func (mock *RepositoryMock) GetAllCalls() []struct {
 }
 
 // GetByID calls GetByIDFunc.
-func (mock *RepositoryMock) GetByID(s string) (*model.Transaction, error) {
+func (mock *TransactionRepositoryMock) GetByID(s string) (*model.Transaction, error) {
 	if mock.GetByIDFunc == nil {
-		panic("RepositoryMock.GetByIDFunc: method is nil but Repository.GetByID was just called")
+		panic("TransactionRepositoryMock.GetByIDFunc: method is nil but TransactionRepository.GetByID was just called")
 	}
 	callInfo := struct {
 		S string
@@ -108,8 +108,8 @@ func (mock *RepositoryMock) GetByID(s string) (*model.Transaction, error) {
 
 // GetByIDCalls gets all the calls that were made to GetByID.
 // Check the length with:
-//     len(mockedRepository.GetByIDCalls())
-func (mock *RepositoryMock) GetByIDCalls() []struct {
+//     len(mockedTransactionRepository.GetByIDCalls())
+func (mock *TransactionRepositoryMock) GetByIDCalls() []struct {
 	S string
 } {
 	var calls []struct {
@@ -122,9 +122,9 @@ func (mock *RepositoryMock) GetByIDCalls() []struct {
 }
 
 // Insert calls InsertFunc.
-func (mock *RepositoryMock) Insert(transaction *model.Transaction) error {
+func (mock *TransactionRepositoryMock) Insert(transaction *model.Transaction) error {
 	if mock.InsertFunc == nil {
-		panic("RepositoryMock.InsertFunc: method is nil but Repository.Insert was just called")
+		panic("TransactionRepositoryMock.InsertFunc: method is nil but TransactionRepository.Insert was just called")
 	}
 	callInfo := struct {
 		Transaction *model.Transaction
@@ -139,8 +139,8 @@ func (mock *RepositoryMock) Insert(transaction *model.Transaction) error {
 
 // InsertCalls gets all the calls that were made to Insert.
 // Check the length with:
-//     len(mockedRepository.InsertCalls())
-func (mock *RepositoryMock) InsertCalls() []struct {
+//     len(mockedTransactionRepository.InsertCalls())
+func (mock *TransactionRepositoryMock) InsertCalls() []struct {
 	Transaction *model.Transaction
 } {
 	var calls []struct {
@@ -149,5 +149,70 @@ func (mock *RepositoryMock) InsertCalls() []struct {
 	mock.lockInsert.RLock()
 	calls = mock.calls.Insert
 	mock.lockInsert.RUnlock()
+	return calls
+}
+
+// Ensure, that AccountRepositoryMock does implement AccountRepository.
+// If this is not the case, regenerate this file with moq.
+var _ AccountRepository = &AccountRepositoryMock{}
+
+// AccountRepositoryMock is a mock implementation of AccountRepository.
+//
+// 	func TestSomethingThatUsesAccountRepository(t *testing.T) {
+//
+// 		// make and configure a mocked AccountRepository
+// 		mockedAccountRepository := &AccountRepositoryMock{
+// 			GetByNameFunc: func(s string) (*model.Account, error) {
+// 				panic("mock out the GetByName method")
+// 			},
+// 		}
+//
+// 		// use mockedAccountRepository in code that requires AccountRepository
+// 		// and then make assertions.
+//
+// 	}
+type AccountRepositoryMock struct {
+	// GetByNameFunc mocks the GetByName method.
+	GetByNameFunc func(s string) (*model.Account, error)
+
+	// calls tracks calls to the methods.
+	calls struct {
+		// GetByName holds details about calls to the GetByName method.
+		GetByName []struct {
+			// S is the s argument value.
+			S string
+		}
+	}
+	lockGetByName sync.RWMutex
+}
+
+// GetByName calls GetByNameFunc.
+func (mock *AccountRepositoryMock) GetByName(s string) (*model.Account, error) {
+	if mock.GetByNameFunc == nil {
+		panic("AccountRepositoryMock.GetByNameFunc: method is nil but AccountRepository.GetByName was just called")
+	}
+	callInfo := struct {
+		S string
+	}{
+		S: s,
+	}
+	mock.lockGetByName.Lock()
+	mock.calls.GetByName = append(mock.calls.GetByName, callInfo)
+	mock.lockGetByName.Unlock()
+	return mock.GetByNameFunc(s)
+}
+
+// GetByNameCalls gets all the calls that were made to GetByName.
+// Check the length with:
+//     len(mockedAccountRepository.GetByNameCalls())
+func (mock *AccountRepositoryMock) GetByNameCalls() []struct {
+	S string
+} {
+	var calls []struct {
+		S string
+	}
+	mock.lockGetByName.RLock()
+	calls = mock.calls.GetByName
+	mock.lockGetByName.RUnlock()
 	return calls
 }

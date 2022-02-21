@@ -1,13 +1,13 @@
 package service
 
-//go:generate moq -out service_mock_test.go . Repository
+//go:generate moq -out service_mock_test.go . TransactionRepository AccountRepository
 
 import (
 	"fmt"
 	"time"
 
-	"github.com/siddhantac/fintra/model"
 	"github.com/siddhantac/fintra/infra/uid"
+	"github.com/siddhantac/fintra/model"
 )
 
 const (
@@ -21,25 +21,33 @@ func NewTime(t time.Time) Time {
 }
 
 type Service struct {
-	repo Repository
+	txnRepo TransactionRepository
+	accRepo AccountRepository
 }
 
-type Repository interface {
+type TransactionRepository interface {
 	Insert(*model.Transaction) error
 	GetByID(string) (*model.Transaction, error)
 	GetAll() ([]*model.Transaction, error)
 }
 
-func NewService(repo Repository) *Service {
-	return &Service{repo: repo}
+type AccountRepository interface {
+	GetByName(string) (*model.Account, error)
+}
+
+func NewService(txnRepo TransactionRepository, accRepo AccountRepository) *Service {
+	return &Service{
+		txnRepo: txnRepo,
+		accRepo: accRepo,
+	}
 }
 
 func (s *Service) GetTransaction(id string) (*model.Transaction, error) {
-	return s.repo.GetByID(id)
+	return s.txnRepo.GetByID(id)
 }
 
 func (s *Service) GetAllTransactions() ([]*model.Transaction, error) {
-	return s.repo.GetAll()
+	return s.txnRepo.GetAll()
 }
 
 func (s *Service) NewTransaction(amount float64, isDebit bool, date, category, transactionType, description, account string) (*model.Transaction, error) {
@@ -54,7 +62,11 @@ func (s *Service) NewTransaction(amount float64, isDebit bool, date, category, t
 		return nil, err
 	}
 
-	if err := s.repo.Insert(transaction); err != nil {
+	if _, err = s.accRepo.GetByName(transaction.Account); err != nil {
+		return nil, fmt.Errorf("invalid account: %w", err)
+	}
+
+	if err := s.txnRepo.Insert(transaction); err != nil {
 		return nil, fmt.Errorf("repo.Insert: %w", err)
 	}
 
