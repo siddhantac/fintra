@@ -100,7 +100,6 @@ func validateType(txTyp domain.TransactionType, isDebit bool) error {
 		return domain.ErrUnknownTransactionType(string(txTyp))
 	}
 
-	// TODO: IsDebit should be set by server, this can be removed
 	switch txTyp {
 	case domain.TrTypeExpense, domain.TrTypeInvestment:
 		if !isDebit {

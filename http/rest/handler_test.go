@@ -194,23 +194,6 @@ func TestCreateTransaction(t *testing.T) {
 				require.Contains(t, m["error"], "invalid json")
 			},
 		},
-		"invalid request": {
-			reqBody: `{
-				"amount": 23,
-				"type": "income",
-				"description": "dinner",
-				"date": "2021-08-17",
-				"category": "meals",
-				"is_debit": true,
-				"account": "axis bank"
-			}`,
-			serviceCalls: 1,
-			wantCode:     http.StatusBadRequest,
-			compareResp: func(t *testing.T, m map[string]interface{}) {
-				require.Contains(t, m, "error")
-				require.Equal(t, m["error"], "income must be credit")
-			},
-		},
 	}
 
 	for name, test := range tests {
