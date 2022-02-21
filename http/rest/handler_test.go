@@ -204,7 +204,7 @@ func TestCreateTransaction(t *testing.T) {
 			mockSvc := &ServiceMock{
 				NewTransactionFunc: func(amount float64, isDebit bool, date, category, transactionType, description, account string) (*domain.Transaction, error) {
 					d := time.Date(2021, 8, 17, 0, 0, 0, 0, time.UTC)
-					return domain.NewTransaction(amount, d, isDebit, category, transactionType, description, account)
+					return domain.NewTransaction("1", amount, d, isDebit, category, transactionType, description, account), nil
 				},
 			}
 			handler := NewHandler(mockSvc)

@@ -3,8 +3,6 @@ package domain
 import (
 	"fmt"
 	"time"
-
-	"github.com/segmentio/ksuid"
 )
 
 type Transaction struct {
@@ -22,14 +20,14 @@ type Transaction struct {
 	Updated     time.Time
 }
 
-func NewTransaction(amount float64, date time.Time, isDebit bool, category, transactionType, description, account string) *Transaction {
+func NewTransaction(id string, amount float64, date time.Time, isDebit bool, category, transactionType, description, account string) *Transaction {
 	now := time.Now()
 	intAmount := int(amount * 100)
 
 	return &Transaction{
 		IntAmount:   intAmount,
 		Amount:      amount,
-		ID:          NewID(),
+		ID:          id,
 		Type:        TransactionType(transactionType),
 		Category:    TransactionCategory(category),
 		Date:        date,
@@ -89,7 +87,3 @@ const (
 	TrCategoryUtilities     TransactionCategory = "utilities"
 	TrCategoryRefund        TransactionCategory = "refund"
 )
-
-func NewID() string {
-	return ksuid.New().String()
-}
