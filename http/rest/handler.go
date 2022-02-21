@@ -46,11 +46,11 @@ type IDGenerator interface {
 }
 
 type Handler struct {
-	service Service
+	txnsvc TransactionService
 }
 
-//go:generate moq -out handler_mock_test.go . Service
-type Service interface {
+//go:generate moq -out handler_mock_test.go . TransactionService
+type TransactionService interface {
 	GetAllTransactions() ([]*model.Transaction, error)
 	GetTransaction(id string) (*model.Transaction, error)
 	NewTransaction(
@@ -59,8 +59,8 @@ type Service interface {
 		date, category, transactionType, description, account string) (*model.Transaction, error)
 }
 
-func NewHandler(service Service) *Handler {
-	return &Handler{service: service}
+func NewHandler(transactionService TransactionService) *Handler {
+	return &Handler{txnsvc: transactionService}
 }
 
 func (h *Handler) HealthCheck(w http.ResponseWriter, r *http.Request) {
@@ -78,7 +78,7 @@ func (h *Handler) HealthCheck(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetAllTransactions(w http.ResponseWriter, r *http.Request) {
-	transactions, err := h.service.GetAllTransactions()
+	transactions, err := h.txnsvc.GetAllTransactions()
 	if err != nil {
 		log.Println(err)
 		http.Error(w, newErrorResponse(err.Error()), http.StatusInternalServerError)
@@ -99,7 +99,7 @@ func (h *Handler) GetAllTransactions(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) GetTransactionByID(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "txnID")
-	transaction, err := h.service.GetTransaction(id)
+	transaction, err := h.txnsvc.GetTransaction(id)
 	if err != nil {
 		log.Println(err)
 		if errors.Is(err, model.ErrNotFound) {
@@ -132,7 +132,7 @@ func (h *Handler) CreateTransaction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	transaction, err := h.service.NewTransaction(ctr.Amount, ctr.IsDebit, ctr.Date, ctr.Category, ctr.Type, ctr.Description, ctr.Account)
+	transaction, err := h.txnsvc.NewTransaction(ctr.Amount, ctr.IsDebit, ctr.Date, ctr.Category, ctr.Type, ctr.Description, ctr.Account)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, newErrorResponse(err.Error()), http.StatusBadRequest)

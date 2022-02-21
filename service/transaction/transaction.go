@@ -1,6 +1,6 @@
-package service
+package transaction
 
-//go:generate moq -out service_mock_test.go . TransactionRepository AccountRepository
+//go:generate moq -out transaction_mock_test.go . TransactionRepository AccountRepository
 
 import (
 	"fmt"
@@ -32,7 +32,7 @@ type TransactionRepository interface {
 }
 
 type AccountRepository interface {
-	GetByName(string) (*model.Account, error)
+	GetByID(string) (*model.Account, error)
 }
 
 func NewService(txnRepo TransactionRepository, accRepo AccountRepository) *Service {
@@ -62,7 +62,7 @@ func (s *Service) NewTransaction(amount float64, isDebit bool, date, category, t
 		return nil, err
 	}
 
-	if _, err = s.accRepo.GetByName(transaction.Account); err != nil {
+	if _, err = s.accRepo.GetByID(transaction.Account); err != nil {
 		return nil, fmt.Errorf("invalid account: %w", err)
 	}
 

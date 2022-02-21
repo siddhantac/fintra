@@ -1,4 +1,4 @@
-package service
+package transaction
 
 import (
 	"fmt"
@@ -30,7 +30,7 @@ func TestNewTransaction(t *testing.T) {
 		},
 	}
 	accRepo := &AccountRepositoryMock{
-		GetByNameFunc: func(_ string) (*model.Account, error) {
+		GetByIDFunc: func(_ string) (*model.Account, error) {
 			return nil, nil
 		},
 	}
@@ -59,7 +59,7 @@ func TestNewTransaction(t *testing.T) {
 		Currency:    "sgd",
 	}
 	require.Len(t, txnRepo.InsertCalls(), 1)
-	require.Len(t, accRepo.GetByNameCalls(), 1)
+	require.Len(t, accRepo.GetByIDCalls(), 1)
 
 	// don't compare date and ID as they are non-deterministic
 	txn.Created = time.Time{}

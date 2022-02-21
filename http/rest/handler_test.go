@@ -24,7 +24,7 @@ func TestGetAllTransactions(t *testing.T) {
 	tests := map[string]struct {
 		wantCode     int
 		wantRespBody string
-		mockSvc      *ServiceMock
+		mockSvc      *TransactionServiceMock
 	}{
 		"valid expense request": {
 			wantCode: http.StatusOK,
@@ -48,7 +48,7 @@ func TestGetAllTransactions(t *testing.T) {
 				"is_debit": true,
 				"account": "credit card"
 			}]`,
-			mockSvc: &ServiceMock{
+			mockSvc: &TransactionServiceMock{
 				GetAllTransactionsFunc: func() ([]*model.Transaction, error) {
 					return []*model.Transaction{
 						{
@@ -97,7 +97,7 @@ func TestGetTransactionByID(t *testing.T) {
 	tests := map[string]struct {
 		wantCode     int
 		wantRespBody string
-		mockSvc      *ServiceMock
+		mockSvc      *TransactionServiceMock
 	}{
 		"valid expense request": {
 			wantCode: http.StatusOK,
@@ -111,7 +111,7 @@ func TestGetTransactionByID(t *testing.T) {
 				"is_debit": true,
 				"account": "axis bank"
 			}`,
-			mockSvc: &ServiceMock{
+			mockSvc: &TransactionServiceMock{
 				GetTransactionFunc: func(id string) (*model.Transaction, error) {
 					return &model.Transaction{
 						ID:          "1",
@@ -201,7 +201,7 @@ func TestCreateTransaction(t *testing.T) {
 			r := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(test.reqBody))
 			w := httptest.NewRecorder()
 
-			mockSvc := &ServiceMock{
+			mockSvc := &TransactionServiceMock{
 				NewTransactionFunc: func(amount float64, isDebit bool, date, category, transactionType, description, account string) (*model.Transaction, error) {
 					d := time.Date(2021, 8, 17, 0, 0, 0, 0, time.UTC)
 					return model.NewTransaction("1", amount, d, isDebit, category, transactionType, description, account), nil

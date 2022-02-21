@@ -8,16 +8,16 @@ import (
 	"sync"
 )
 
-// Ensure, that ServiceMock does implement Service.
+// Ensure, that TransactionServiceMock does implement TransactionService.
 // If this is not the case, regenerate this file with moq.
-var _ Service = &ServiceMock{}
+var _ TransactionService = &TransactionServiceMock{}
 
-// ServiceMock is a mock implementation of Service.
+// TransactionServiceMock is a mock implementation of TransactionService.
 //
-// 	func TestSomethingThatUsesService(t *testing.T) {
+// 	func TestSomethingThatUsesTransactionService(t *testing.T) {
 //
-// 		// make and configure a mocked Service
-// 		mockedService := &ServiceMock{
+// 		// make and configure a mocked TransactionService
+// 		mockedTransactionService := &TransactionServiceMock{
 // 			GetAllTransactionsFunc: func() ([]*model.Transaction, error) {
 // 				panic("mock out the GetAllTransactions method")
 // 			},
@@ -29,11 +29,11 @@ var _ Service = &ServiceMock{}
 // 			},
 // 		}
 //
-// 		// use mockedService in code that requires Service
+// 		// use mockedTransactionService in code that requires TransactionService
 // 		// and then make assertions.
 //
 // 	}
-type ServiceMock struct {
+type TransactionServiceMock struct {
 	// GetAllTransactionsFunc mocks the GetAllTransactions method.
 	GetAllTransactionsFunc func() ([]*model.Transaction, error)
 
@@ -77,9 +77,9 @@ type ServiceMock struct {
 }
 
 // GetAllTransactions calls GetAllTransactionsFunc.
-func (mock *ServiceMock) GetAllTransactions() ([]*model.Transaction, error) {
+func (mock *TransactionServiceMock) GetAllTransactions() ([]*model.Transaction, error) {
 	if mock.GetAllTransactionsFunc == nil {
-		panic("ServiceMock.GetAllTransactionsFunc: method is nil but Service.GetAllTransactions was just called")
+		panic("TransactionServiceMock.GetAllTransactionsFunc: method is nil but TransactionService.GetAllTransactions was just called")
 	}
 	callInfo := struct {
 	}{}
@@ -91,8 +91,8 @@ func (mock *ServiceMock) GetAllTransactions() ([]*model.Transaction, error) {
 
 // GetAllTransactionsCalls gets all the calls that were made to GetAllTransactions.
 // Check the length with:
-//     len(mockedService.GetAllTransactionsCalls())
-func (mock *ServiceMock) GetAllTransactionsCalls() []struct {
+//     len(mockedTransactionService.GetAllTransactionsCalls())
+func (mock *TransactionServiceMock) GetAllTransactionsCalls() []struct {
 } {
 	var calls []struct {
 	}
@@ -103,9 +103,9 @@ func (mock *ServiceMock) GetAllTransactionsCalls() []struct {
 }
 
 // GetTransaction calls GetTransactionFunc.
-func (mock *ServiceMock) GetTransaction(id string) (*model.Transaction, error) {
+func (mock *TransactionServiceMock) GetTransaction(id string) (*model.Transaction, error) {
 	if mock.GetTransactionFunc == nil {
-		panic("ServiceMock.GetTransactionFunc: method is nil but Service.GetTransaction was just called")
+		panic("TransactionServiceMock.GetTransactionFunc: method is nil but TransactionService.GetTransaction was just called")
 	}
 	callInfo := struct {
 		ID string
@@ -120,8 +120,8 @@ func (mock *ServiceMock) GetTransaction(id string) (*model.Transaction, error) {
 
 // GetTransactionCalls gets all the calls that were made to GetTransaction.
 // Check the length with:
-//     len(mockedService.GetTransactionCalls())
-func (mock *ServiceMock) GetTransactionCalls() []struct {
+//     len(mockedTransactionService.GetTransactionCalls())
+func (mock *TransactionServiceMock) GetTransactionCalls() []struct {
 	ID string
 } {
 	var calls []struct {
@@ -134,9 +134,9 @@ func (mock *ServiceMock) GetTransactionCalls() []struct {
 }
 
 // NewTransaction calls NewTransactionFunc.
-func (mock *ServiceMock) NewTransaction(amount float64, isDebit bool, date string, category string, transactionType string, description string, account string) (*model.Transaction, error) {
+func (mock *TransactionServiceMock) NewTransaction(amount float64, isDebit bool, date string, category string, transactionType string, description string, account string) (*model.Transaction, error) {
 	if mock.NewTransactionFunc == nil {
-		panic("ServiceMock.NewTransactionFunc: method is nil but Service.NewTransaction was just called")
+		panic("TransactionServiceMock.NewTransactionFunc: method is nil but TransactionService.NewTransaction was just called")
 	}
 	callInfo := struct {
 		Amount          float64
@@ -163,8 +163,8 @@ func (mock *ServiceMock) NewTransaction(amount float64, isDebit bool, date strin
 
 // NewTransactionCalls gets all the calls that were made to NewTransaction.
 // Check the length with:
-//     len(mockedService.NewTransactionCalls())
-func (mock *ServiceMock) NewTransactionCalls() []struct {
+//     len(mockedTransactionService.NewTransactionCalls())
+func (mock *TransactionServiceMock) NewTransactionCalls() []struct {
 	Amount          float64
 	IsDebit         bool
 	Date            string
