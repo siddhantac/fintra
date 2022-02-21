@@ -33,6 +33,7 @@ type TransactionRepository interface {
 
 type AccountRepository interface {
 	GetByID(string) (*model.Account, error)
+	Insert(*model.Account) error
 }
 
 func NewTransactionService(txnRepo TransactionRepository, accRepo AccountRepository) *TransactionService {

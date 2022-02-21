@@ -45,11 +45,11 @@ type IDGenerator interface {
 	NewID() string
 }
 
-type Handler struct {
+type TransactionHandler struct {
 	txnsvc TransactionService
 }
 
-//go:generate moq -out handler_mock_test.go . TransactionService
+//go:generate moq -out transactionHandler_mock_test.go . TransactionService
 type TransactionService interface {
 	GetAllTransactions() ([]*model.Transaction, error)
 	GetTransaction(id string) (*model.Transaction, error)
@@ -59,11 +59,11 @@ type TransactionService interface {
 		date, category, transactionType, description, account string) (*model.Transaction, error)
 }
 
-func NewHandler(transactionService TransactionService) *Handler {
-	return &Handler{txnsvc: transactionService}
+func NewTransactionHandler(transactionService TransactionService) *TransactionHandler {
+	return &TransactionHandler{txnsvc: transactionService}
 }
 
-func (h *Handler) HealthCheck(w http.ResponseWriter, r *http.Request) {
+func (h *TransactionHandler) HealthCheck(w http.ResponseWriter, r *http.Request) {
 	resp := map[string]interface{}{
 		"status": "healthy",
 	}
@@ -77,7 +77,7 @@ func (h *Handler) HealthCheck(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func (h *Handler) GetAllTransactions(w http.ResponseWriter, r *http.Request) {
+func (h *TransactionHandler) GetAllTransactions(w http.ResponseWriter, r *http.Request) {
 	transactions, err := h.txnsvc.GetAllTransactions()
 	if err != nil {
 		log.Println(err)
@@ -97,7 +97,7 @@ func (h *Handler) GetAllTransactions(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) GetTransactionByID(w http.ResponseWriter, r *http.Request) {
+func (h *TransactionHandler) GetTransactionByID(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "txnID")
 	transaction, err := h.txnsvc.GetTransaction(id)
 	if err != nil {
@@ -123,7 +123,7 @@ func (h *Handler) GetTransactionByID(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) CreateTransaction(w http.ResponseWriter, r *http.Request) {
+func (h *TransactionHandler) CreateTransaction(w http.ResponseWriter, r *http.Request) {
 	var ctr CreateTransactionRequest
 	if err := json.NewDecoder(r.Body).Decode(&ctr); err != nil {
 		log.Println(err)

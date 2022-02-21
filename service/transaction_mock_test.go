@@ -165,6 +165,9 @@ var _ AccountRepository = &AccountRepositoryMock{}
 // 			GetByIDFunc: func(s string) (*model.Account, error) {
 // 				panic("mock out the GetByID method")
 // 			},
+// 			InsertFunc: func(account *model.Account) error {
+// 				panic("mock out the Insert method")
+// 			},
 // 		}
 //
 // 		// use mockedAccountRepository in code that requires AccountRepository
@@ -175,6 +178,9 @@ type AccountRepositoryMock struct {
 	// GetByIDFunc mocks the GetByID method.
 	GetByIDFunc func(s string) (*model.Account, error)
 
+	// InsertFunc mocks the Insert method.
+	InsertFunc func(account *model.Account) error
+
 	// calls tracks calls to the methods.
 	calls struct {
 		// GetByID holds details about calls to the GetByID method.
@@ -182,8 +188,14 @@ type AccountRepositoryMock struct {
 			// S is the s argument value.
 			S string
 		}
+		// Insert holds details about calls to the Insert method.
+		Insert []struct {
+			// Account is the account argument value.
+			Account *model.Account
+		}
 	}
 	lockGetByID sync.RWMutex
+	lockInsert  sync.RWMutex
 }
 
 // GetByID calls GetByIDFunc.
@@ -214,5 +226,36 @@ func (mock *AccountRepositoryMock) GetByIDCalls() []struct {
 	mock.lockGetByID.RLock()
 	calls = mock.calls.GetByID
 	mock.lockGetByID.RUnlock()
+	return calls
+}
+
+// Insert calls InsertFunc.
+func (mock *AccountRepositoryMock) Insert(account *model.Account) error {
+	if mock.InsertFunc == nil {
+		panic("AccountRepositoryMock.InsertFunc: method is nil but AccountRepository.Insert was just called")
+	}
+	callInfo := struct {
+		Account *model.Account
+	}{
+		Account: account,
+	}
+	mock.lockInsert.Lock()
+	mock.calls.Insert = append(mock.calls.Insert, callInfo)
+	mock.lockInsert.Unlock()
+	return mock.InsertFunc(account)
+}
+
+// InsertCalls gets all the calls that were made to Insert.
+// Check the length with:
+//     len(mockedAccountRepository.InsertCalls())
+func (mock *AccountRepositoryMock) InsertCalls() []struct {
+	Account *model.Account
+} {
+	var calls []struct {
+		Account *model.Account
+	}
+	mock.lockInsert.RLock()
+	calls = mock.calls.Insert
+	mock.lockInsert.RUnlock()
 	return calls
 }

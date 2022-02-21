@@ -84,7 +84,7 @@ func TestGetAllTransactions(t *testing.T) {
 			r := httptest.NewRequest(http.MethodGet, "/transactions", nil)
 			w := httptest.NewRecorder()
 
-			handler := NewHandler(test.mockSvc)
+			handler := NewTransactionHandler(test.mockSvc)
 			handler.GetAllTransactions(w, r)
 
 			assert.Equal(t, test.wantCode, w.Code)
@@ -133,7 +133,7 @@ func TestGetTransactionByID(t *testing.T) {
 			r := httptest.NewRequest(http.MethodGet, "/transactions/1", nil)
 			w := httptest.NewRecorder()
 
-			handler := NewHandler(test.mockSvc)
+			handler := NewTransactionHandler(test.mockSvc)
 			handler.GetTransactionByID(w, r)
 
 			assert.Equal(t, test.wantCode, w.Code)
@@ -207,7 +207,7 @@ func TestCreateTransaction(t *testing.T) {
 					return model.NewTransaction("1", amount, d, isDebit, category, transactionType, description, account), nil
 				},
 			}
-			handler := NewHandler(mockSvc)
+			handler := NewTransactionHandler(mockSvc)
 			handler.CreateTransaction(w, r)
 
 			assert.Equal(t, test.wantCode, w.Code)

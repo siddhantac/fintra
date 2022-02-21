@@ -58,19 +58,24 @@ func main() {
 func run() error {
 	txnRepo := repository.NewTransactionRepository(store.NewMemStore())
 	accRepo := repository.NewAccountRepository(store.NewMemStore())
-	svc := service.NewTransactionService(txnRepo, accRepo)
-	h := rest.NewHandler(svc)
+	txnSvc := service.NewTransactionService(txnRepo, accRepo)
+	accSvc := service.NewAccountService(accRepo)
+	txnHandler := rest.NewTransactionHandler(txnSvc)
+	accHandler := rest.NewAccountHandler(accSvc)
 
 	log.Println("starting...")
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.SetHeader("content-type", "application/json"))
-	r.Get("/healthcheck", h.HealthCheck)
+	r.Get("/healthcheck", txnHandler.HealthCheck)
 	r.Route("/transactions", func(r chi.Router) {
-		r.Post("/", h.CreateTransaction)
-		r.Get("/{txnID}", h.GetTransactionByID)
-		r.Get("/", h.GetAllTransactions)
+		r.Post("/", txnHandler.CreateTransaction)
+		r.Get("/{txnID}", txnHandler.GetTransactionByID)
+		r.Get("/", txnHandler.GetAllTransactions)
+	})
+	r.Route("/accounts", func(r chi.Router) {
+		r.Post("/", accHandler.CreateAccount)
 	})
 
 	var wg sync.WaitGroup
