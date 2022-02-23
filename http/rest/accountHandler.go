@@ -26,6 +26,7 @@ type AccountHandler struct {
 
 type AccountService interface {
 	NewAccount(name string, startingBalance int) (*model.Account, error)
+	GetAllAccounts() ([]*model.Account, error)
 }
 
 func NewAccountHandler(accountService AccountService) *AccountHandler {
@@ -51,6 +52,26 @@ func (h *AccountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) {
 	resp := newAccountResponse(account)
 	w.WriteHeader(http.StatusCreated)
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Println(err)
+		http.Error(w, "internal error", http.StatusInternalServerError)
+	}
+}
+
+func (h *AccountHandler) GetAllAccounts(w http.ResponseWriter, r *http.Request) {
+	accounts, err := h.accsvc.GetAllAccounts()
+	if err != nil {
+		log.Println(err)
+		http.Error(w, newErrorResponse(err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	accResps := make([]createAccountResponse, 0, len(accounts))
+	for _, acc := range accounts {
+		accResps = append(accResps, newAccountResponse(acc))
+	}
+
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(accResps); err != nil {
 		log.Println(err)
 		http.Error(w, "internal error", http.StatusInternalServerError)
 	}

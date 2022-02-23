@@ -27,6 +27,10 @@ func (s *AccountService) NewAccount(name string, startingBalance int) (*model.Ac
 	return acc, nil
 }
 
+func (s *AccountService) GetAllAccounts() ([]*model.Account, error) {
+	return s.accRepo.GetAll()
+}
+
 func validateAccount(account *model.Account) error {
 	if account.Name() == "" {
 		return model.ErrEmpty("name")

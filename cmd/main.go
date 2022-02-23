@@ -75,6 +75,7 @@ func run() error {
 		r.Get("/", txnHandler.GetAllTransactions)
 	})
 	r.Route("/accounts", func(r chi.Router) {
+		r.Get("/", accHandler.GetAllAccounts)
 		r.Post("/", accHandler.CreateAccount)
 	})
 
