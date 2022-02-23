@@ -9,3 +9,6 @@ build:
 
 run: build
 	./fintra
+
+generate:
+	go generate ./...

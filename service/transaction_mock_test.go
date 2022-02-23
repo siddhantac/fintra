@@ -162,6 +162,9 @@ var _ AccountRepository = &AccountRepositoryMock{}
 //
 // 		// make and configure a mocked AccountRepository
 // 		mockedAccountRepository := &AccountRepositoryMock{
+// 			GetAllFunc: func() ([]*model.Account, error) {
+// 				panic("mock out the GetAll method")
+// 			},
 // 			GetByIDFunc: func(s string) (*model.Account, error) {
 // 				panic("mock out the GetByID method")
 // 			},
@@ -175,6 +178,9 @@ var _ AccountRepository = &AccountRepositoryMock{}
 //
 // 	}
 type AccountRepositoryMock struct {
+	// GetAllFunc mocks the GetAll method.
+	GetAllFunc func() ([]*model.Account, error)
+
 	// GetByIDFunc mocks the GetByID method.
 	GetByIDFunc func(s string) (*model.Account, error)
 
@@ -183,6 +189,9 @@ type AccountRepositoryMock struct {
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// GetAll holds details about calls to the GetAll method.
+		GetAll []struct {
+		}
 		// GetByID holds details about calls to the GetByID method.
 		GetByID []struct {
 			// S is the s argument value.
@@ -194,8 +203,35 @@ type AccountRepositoryMock struct {
 			Account *model.Account
 		}
 	}
+	lockGetAll  sync.RWMutex
 	lockGetByID sync.RWMutex
 	lockInsert  sync.RWMutex
+}
+
+// GetAll calls GetAllFunc.
+func (mock *AccountRepositoryMock) GetAll() ([]*model.Account, error) {
+	if mock.GetAllFunc == nil {
+		panic("AccountRepositoryMock.GetAllFunc: method is nil but AccountRepository.GetAll was just called")
+	}
+	callInfo := struct {
+	}{}
+	mock.lockGetAll.Lock()
+	mock.calls.GetAll = append(mock.calls.GetAll, callInfo)
+	mock.lockGetAll.Unlock()
+	return mock.GetAllFunc()
+}
+
+// GetAllCalls gets all the calls that were made to GetAll.
+// Check the length with:
+//     len(mockedAccountRepository.GetAllCalls())
+func (mock *AccountRepositoryMock) GetAllCalls() []struct {
+} {
+	var calls []struct {
+	}
+	mock.lockGetAll.RLock()
+	calls = mock.calls.GetAll
+	mock.lockGetAll.RUnlock()
+	return calls
 }
 
 // GetByID calls GetByIDFunc.
