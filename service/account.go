@@ -37,3 +37,11 @@ func validateAccount(account *model.Account) error {
 	}
 	return nil
 }
+
+func (s *AccountService) UpdateAccountBalance(account *model.Account, txn *model.Transaction) int {
+	amount := txn.IntAmount
+	if txn.IsDebit {
+		amount = -1 * amount
+	}
+	return account.AddTransaction(amount)
+}

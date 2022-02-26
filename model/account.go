@@ -34,6 +34,11 @@ func (a *Account) CurrentBalance() int {
 	return a.currentBalance
 }
 
+func (a *Account) AddTransaction(amount int) int {
+	a.currentBalance += amount
+	return a.CurrentBalance()
+}
+
 /* func (a *Account) Credit(amount int) int {
 	a.currentBalance += amount
 	return a.CurrentBalance()
