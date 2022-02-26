@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-const baseURL = "http://localhost:8090"
+const baseURL = "http://localhost:8080"
 
 func TestMain(m *testing.M) {
 	currDir, err := os.Getwd()
@@ -57,7 +57,7 @@ func buildApp(binPath string) error {
 }
 
 func startApp(ctx context.Context, appPath string) error {
-	cmd := exec.CommandContext(ctx, appPath)
+	cmd := exec.CommandContext(ctx, appPath, "-port", "8080")
 
 	if out, err := cmd.CombinedOutput(); err != nil {
 		return fmt.Errorf("%s: %w", out, err)
@@ -76,6 +76,9 @@ func healthcheck() error {
 	for {
 		select {
 		case <-ctx.Done():
+			if resp == nil {
+				return fmt.Errorf("no response from server")
+			}
 			if resp.StatusCode != http.StatusOK {
 				return fmt.Errorf("status returned: %d", resp.StatusCode)
 			}

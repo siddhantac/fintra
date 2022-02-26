@@ -7,8 +7,8 @@ test-integration:
 build:
 	go build -o fintra ./cmd
 
-run: build
-	./fintra
+run: 
+	go run ./cmd/main.go -port 8090
 
 generate:
 	go generate ./...

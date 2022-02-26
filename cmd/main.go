@@ -3,6 +3,7 @@ package main
 import (
 	// "log"
 	"context"
+	"flag"
 	"log"
 	"net/http"
 	"os"
@@ -19,35 +20,6 @@ import (
 	"github.com/siddhantac/fintra/service"
 )
 
-// func main() {
-// 	ms := store.NewMemStore()
-
-// 	tx, err := model.NewTransaction(23, time.Now(), true, string(model.TrCategoryEntertainment), string(model.TrTypeExpense), "movies", "Citibank")
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	ms.Insert(tx.ID, tx)
-
-// 	tx2, err := model.NewTransaction(11, time.Now(), true, string(model.TrCategoryMeals), string(model.TrTypeExpense), "foodpanda", "Citibank")
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	ms.Insert(tx2.ID, tx2)
-
-// 	tx3, err := model.NewTransaction(12, time.Now(), true, string(model.TrCategoryMeals), string(model.TrTypeExpense), "deliveroo", "Citibank")
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	ms.Insert(tx3.ID, tx3)
-
-// 	alltx := ms.GetAll()
-
-// 	fmt.Println("no. of txn: ", len(alltx))
-// 	for _, tx := range alltx {
-// 		fmt.Printf("%v\n", tx)
-// 	}
-// }
-
 func main() {
 	if err := run(); err != nil {
 		log.Println(err)
@@ -56,6 +28,13 @@ func main() {
 }
 
 func run() error {
+	var (
+		port string
+	)
+
+	flag.StringVar(&port, "port", "8090", "port on which server will run")
+	flag.Parse()
+
 	txnRepo := repository.NewTransactionRepository(store.NewMemStore())
 	accRepo := repository.NewAccountRepository(store.NewMemStore())
 	txnSvc := service.NewTransactionService(txnRepo, accRepo)
@@ -63,7 +42,7 @@ func run() error {
 	txnHandler := rest.NewTransactionHandler(txnSvc)
 	accHandler := rest.NewAccountHandler(accSvc)
 
-	log.Println("starting...")
+	log.Println("starting server...")
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
@@ -81,7 +60,7 @@ func run() error {
 
 	var wg sync.WaitGroup
 	wg.Add(1)
-	srv := startServer(&wg, r)
+	srv := startServer(&wg, r, port)
 
 	// Setting up signal capturing
 	stop := make(chan os.Signal, 1)
@@ -99,8 +78,8 @@ func run() error {
 	return nil
 }
 
-func startServer(wg *sync.WaitGroup, r http.Handler) *http.Server {
-	srv := &http.Server{Addr: ":8090", Handler: r}
+func startServer(wg *sync.WaitGroup, r http.Handler, port string) *http.Server {
+	srv := &http.Server{Addr: ":" + port, Handler: r}
 
 	go func() {
 		defer wg.Done()
