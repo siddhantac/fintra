@@ -52,6 +52,8 @@
 
 * repository/ -> accountRepo, transactionsRepo, categoriesRepo
 
+_NOTE: consider using this for auto-rebuild https://github.com/cosmtrek/air_
+
 ## Phase 2 - simple transactions
 * persistent storage
     * file based storage (json)
