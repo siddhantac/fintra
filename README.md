@@ -45,7 +45,7 @@
 -   - [x] add logs
 - [ ] repository layer
     - [x] transactions repo
-    - [ ] account repo (cols: txn id, txn amt, running balance)
+    - [x] account repo (cols: txn id, txn amt, running balance)
       - [x] GET methods only
     - [ ] categories repo (required by "assign budget per category")
       - [ ] GET methods. (POST method to create can be done later)

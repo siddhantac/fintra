@@ -31,6 +31,10 @@ func (s *AccountService) GetAllAccounts() ([]*model.Account, error) {
 	return s.accRepo.GetAll()
 }
 
+func (s *AccountService) GetAccountByName(name string) (*model.Account, error) {
+	return s.accRepo.GetByName(name)
+}
+
 func validateAccount(account *model.Account) error {
 	if account.Name() == "" {
 		return model.ErrEmpty("name")

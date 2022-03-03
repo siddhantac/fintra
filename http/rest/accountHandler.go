@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/siddhantac/fintra/model"
 )
 
@@ -27,6 +28,7 @@ type AccountHandler struct {
 type AccountService interface {
 	NewAccount(name string, startingBalance int) (*model.Account, error)
 	GetAllAccounts() ([]*model.Account, error)
+	GetAccountByName(name string) (*model.Account, error)
 }
 
 func NewAccountHandler(accountService AccountService) *AccountHandler {
@@ -72,6 +74,22 @@ func (h *AccountHandler) GetAllAccounts(w http.ResponseWriter, r *http.Request) 
 
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(accResps); err != nil {
+		log.Println(err)
+		http.Error(w, "internal error", http.StatusInternalServerError)
+	}
+}
+
+func (h *AccountHandler) GetAccountByName(w http.ResponseWriter, r *http.Request) {
+	name := chi.URLParam(r, "name")
+	account, err := h.accsvc.GetAccountByName(name)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, newErrorResponse(err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(newAccountResponse(account)); err != nil {
 		log.Println(err)
 		http.Error(w, "internal error", http.StatusInternalServerError)
 	}
