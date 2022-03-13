@@ -1,17 +1,21 @@
-# Build features
+An expense manager application with zero-based budgeting.
+
+**Under construction**
+
+# Roadmap
 
 - [x] create transactions
 - [x] list transactions, get transaction by id
-- [ ] account and category validation (simple hashmap based validation)
-- [ ] data persistence using boltDB
-- [ ] add transfers - (2 transactions in DB)
+- [x] account and category validation (simple hashmap based validation)
+- [ ] (WIP) data persistence using boltDB
+- [ ] transfers - (2 transactions in DB)
 - [ ] report
     - [ ] filter transactions by category
     - [ ] filter transactions by account
     - [ ] filter transactions by date range
     - [ ] account balance
-      - [ ] requires starting balance
-      - [ ] current balance maybe cached in boltDB (using db transactions)
+        - [ ] requires starting balance
+        - [ ] current balance maybe cached in boltDB (using db transactions)
 
 ---
 
