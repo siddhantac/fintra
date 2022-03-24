@@ -5,10 +5,10 @@ import (
 )
 
 type TransactionRepository struct {
-	store Store
+	store Store2
 }
 
-func NewTransactionRepository(storageEngine Store) *TransactionRepository {
+func NewTransactionRepository(storageEngine Store2) *TransactionRepository {
 	return &TransactionRepository{
 		store: storageEngine,
 	}
@@ -20,17 +20,18 @@ func (r *TransactionRepository) Insert(txn *model.Transaction) error {
 }
 
 func (r *TransactionRepository) GetByID(id string) (*model.Transaction, error) {
-	item, err := r.store.GetByID(id)
+	var txn model.Transaction
+	err := r.store.GetByID2(id, &txn)
 	if err != nil {
 		return nil, err
 	}
 
-	if item == nil {
-		return nil, model.ErrNotFound
-	}
+	// if item == nil {
+	//     return nil, model.ErrNotFound
+	// }
 
-	txn := item.(*model.Transaction)
-	return txn, nil
+	// txn := item.(*model.Transaction)
+	return &txn, nil
 }
 
 func (r *TransactionRepository) GetAll() ([]*model.Transaction, error) {

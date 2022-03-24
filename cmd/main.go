@@ -14,6 +14,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 
 	"github.com/siddhantac/fintra/http/rest"
+	"github.com/siddhantac/fintra/infra/db"
 	"github.com/siddhantac/fintra/infra/store"
 	"github.com/siddhantac/fintra/repository"
 	"github.com/siddhantac/fintra/service"
@@ -56,7 +57,12 @@ func main() {
 }
 
 func run() error {
-	txnRepo := repository.NewTransactionRepository(store.NewMemStore())
+	db, err := db.New()
+	if err != nil {
+		return err
+	}
+
+	txnRepo := repository.NewTransactionRepository(db)
 	accRepo := repository.NewAccountRepository(store.NewMemStore())
 	txnSvc := service.NewTransactionService(txnRepo, accRepo)
 	accSvc := service.NewAccountService(accRepo)
