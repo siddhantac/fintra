@@ -3,8 +3,8 @@ package repository
 import (
 	"testing"
 
-	"github.com/siddhantac/fintra/model"
 	"github.com/siddhantac/fintra/infra/store"
+	"github.com/siddhantac/fintra/model"
 	"github.com/stretchr/testify/require"
 )
 
@@ -12,7 +12,7 @@ func TestGetAccountDetails(t *testing.T) {
 	storage := store.NewMemStore()
 	expectedAcc := model.NewAccount("Citibank", 150)
 	// expectedAcc := &model.Account{
-	// 	ID:              "AccID",
+	// 	ID:              "FakeBankAccount",
 	// 	Balance:         150,
 	// 	StartingBalance: 15,
 	// 	Name:            "Citibank",
@@ -21,11 +21,11 @@ func TestGetAccountDetails(t *testing.T) {
 	// }
 
 	storage.Items = map[string]interface{}{
-		"AccID": expectedAcc,
+		"FakeBankAccount": expectedAcc,
 	}
 
 	repo := NewAccountRepository(storage)
-	gotAcc, err := repo.GetByID("AccID")
+	gotAcc, err := repo.GetByName("FakeBankAccount")
 	require.NoError(t, err)
 	require.Equal(t, expectedAcc, gotAcc)
 }
@@ -34,7 +34,7 @@ func TestGetAccountDetails(t *testing.T) {
 func TestCreditToAccount(t *testing.T) {
 	storage := store.NewMemStore()
 	initialState := &model.Account{
-		ID:              "AccID",
+		ID:              "FakeBankAccount",
 		Balance:         150,
 		StartingBalance: 15,
 		Name:            "Citibank",
@@ -43,12 +43,12 @@ func TestCreditToAccount(t *testing.T) {
 	}
 
 	storage.Items = map[string]interface{}{
-		"AccID": initialState,
+		"FakeBankAccount": initialState,
 	}
 
 	repo := NewAccountRepository(storage)
 
-	balance, err := repo.CreditToAccount("AccID", 48)
+	balance, err := repo.CreditToAccount("FakeBankAccount", 48)
 	require.NoError(t, err)
 	require.Equal(t, int64(198), balance)
 }
@@ -56,7 +56,7 @@ func TestCreditToAccount(t *testing.T) {
 func TestDebitFromAccount(t *testing.T) {
 	storage := store.NewMemStore()
 	initialState := &model.Account{
-		ID:              "AccID",
+		ID:              "FakeBankAccount",
 		Balance:         150,
 		StartingBalance: 15,
 		Name:            "Citibank",
@@ -65,12 +65,12 @@ func TestDebitFromAccount(t *testing.T) {
 	}
 
 	storage.Items = map[string]interface{}{
-		"AccID": initialState,
+		"FakeBankAccount": initialState,
 	}
 
 	repo := NewAccountRepository(storage)
 
-	balance, err := repo.DebitFromAccount("AccID", 48)
+	balance, err := repo.DebitFromAccount("FakeBankAccount", 48)
 	require.NoError(t, err)
 	require.Equal(t, int64(102), balance)
 }

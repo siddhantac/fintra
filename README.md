@@ -1,17 +1,21 @@
-# Build features
+An expense manager application with zero-based budgeting.
+
+**Under construction**
+
+# Roadmap
 
 - [x] create transactions
 - [x] list transactions, get transaction by id
-- [ ] account and category validation (simple hashmap based validation)
-- [ ] data persistence using boltDB
-- [ ] add transfers - (2 transactions in DB)
+- [x] account and category validation (simple hashmap based validation)
+- [ ] (WIP) data persistence using boltDB
+- [ ] transfers - (2 transactions in DB)
 - [ ] report
     - [ ] filter transactions by category
     - [ ] filter transactions by account
     - [ ] filter transactions by date range
     - [ ] account balance
-      - [ ] requires starting balance
-      - [ ] current balance maybe cached in boltDB (using db transactions)
+        - [ ] requires starting balance
+        - [ ] current balance maybe cached in boltDB (using db transactions)
 
 ---
 
@@ -45,12 +49,14 @@
 -   - [x] add logs
 - [ ] repository layer
     - [x] transactions repo
-    - [ ] account repo (cols: txn id, txn amt, running balance)
+    - [x] account repo (cols: txn id, txn amt, running balance)
       - [x] GET methods only
     - [ ] categories repo (required by "assign budget per category")
       - [ ] GET methods. (POST method to create can be done later)
 
 * repository/ -> accountRepo, transactionsRepo, categoriesRepo
+
+_NOTE: consider using this for auto-rebuild https://github.com/cosmtrek/air_
 
 ## Phase 2 - simple transactions
 * persistent storage

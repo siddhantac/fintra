@@ -17,7 +17,7 @@ func (r *AccountRepo) Insert(account *model.Account) error {
 	return nil
 }
 
-func (r *AccountRepo) GetByID(name string) (*model.Account, error) {
+func (r *AccountRepo) GetByName(name string) (*model.Account, error) {
 	item, err := r.store.GetByID(name)
 	if err != nil {
 		return nil, err

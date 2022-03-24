@@ -55,6 +55,7 @@ func run() error {
 	})
 	r.Route("/accounts", func(r chi.Router) {
 		r.Get("/", accHandler.GetAllAccounts)
+		r.Get("/{name}", accHandler.GetAccountByName)
 		r.Post("/", accHandler.CreateAccount)
 	})
 

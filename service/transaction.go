@@ -33,7 +33,7 @@ type TransactionRepository interface {
 
 type AccountRepository interface {
 	GetAll() ([]*model.Account, error)
-	GetByID(string) (*model.Account, error)
+	GetByName(string) (*model.Account, error)
 	Insert(*model.Account) error
 }
 
@@ -64,13 +64,14 @@ func (s *TransactionService) NewTransaction(amount float64, isDebit bool, date, 
 		return nil, err
 	}
 
-	if _, err = s.accRepo.GetByID(transaction.Account); err != nil {
+	if _, err = s.accRepo.GetByName(transaction.Account); err != nil {
 		return nil, fmt.Errorf("error in account %s: %w", transaction.Account, err)
 	}
 
 	if err := s.txnRepo.Insert(transaction); err != nil {
 		return nil, fmt.Errorf("repo.Insert: %w", err)
 	}
+	// TODO update account balance
 
 	return transaction, nil
 }
