@@ -5,10 +5,10 @@ test-integration:
 	go test -tags integration ./tests
 
 build:
-	go build -o fintra ./cmd
+	go build -o ./bin/fintra ./cmd
 
 run: build
-	./fintra
+	./bin/fintra
 
 generate:
 	go generate ./...
