@@ -8,9 +8,13 @@ import (
 	"github.com/boltdb/bolt"
 )
 
+var (
+	bucketAccounts     = []byte("accounts")
+	bucketTransactions = []byte("transactions")
+)
+
 type BoltDB struct {
 	*bolt.DB
-	testbucket *bolt.Bucket
 }
 
 func New() (*BoltDB, error) {
@@ -51,16 +55,6 @@ func (b *BoltDB) Insert(id string, item interface{}) error {
 	})
 	return nil
 }
-func (b *BoltDB) GetByID2(id string, item interface{}) error {
-	var obj []byte
-	err := b.DB.View(func(tx *bolt.Tx) error {
-		obj = tx.Bucket([]byte("testbucket")).Get([]byte(id))
-		return nil
-	})
-
-	err = json.Unmarshal(obj, item)
-	return err
-}
 
 func (b *BoltDB) GetByID(id string) (interface{}, error) {
 	var item interface{}
@@ -73,4 +67,20 @@ func (b *BoltDB) GetByID(id string) (interface{}, error) {
 
 func (b *BoltDB) GetAll() []interface{} {
 	return nil
+}
+
+func (b *BoltDB) put(bucket, key, item []byte) error {
+	err := b.DB.Update(func(tx *bolt.Tx) error {
+		return tx.Bucket(bucket).Put(key, item)
+	})
+	return err
+}
+
+func (b *BoltDB) get(key, bucket []byte) []byte {
+	var obj []byte
+	b.DB.View(func(tx *bolt.Tx) error {
+		obj = tx.Bucket(bucket).Get(key)
+		return nil
+	})
+	return obj
 }

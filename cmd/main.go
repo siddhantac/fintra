@@ -15,39 +15,8 @@ import (
 
 	"github.com/siddhantac/fintra/http/rest"
 	"github.com/siddhantac/fintra/infra/db"
-	"github.com/siddhantac/fintra/infra/store"
-	"github.com/siddhantac/fintra/repository"
 	"github.com/siddhantac/fintra/service"
 )
-
-// func main() {
-// 	ms := store.NewMemStore()
-
-// 	tx, err := model.NewTransaction(23, time.Now(), true, string(model.TrCategoryEntertainment), string(model.TrTypeExpense), "movies", "Citibank")
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	ms.Insert(tx.ID, tx)
-
-// 	tx2, err := model.NewTransaction(11, time.Now(), true, string(model.TrCategoryMeals), string(model.TrTypeExpense), "foodpanda", "Citibank")
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	ms.Insert(tx2.ID, tx2)
-
-// 	tx3, err := model.NewTransaction(12, time.Now(), true, string(model.TrCategoryMeals), string(model.TrTypeExpense), "deliveroo", "Citibank")
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	ms.Insert(tx3.ID, tx3)
-
-// 	alltx := ms.GetAll()
-
-// 	fmt.Println("no. of txn: ", len(alltx))
-// 	for _, tx := range alltx {
-// 		fmt.Printf("%v\n", tx)
-// 	}
-// }
 
 func main() {
 	if err := run(); err != nil {
@@ -62,10 +31,10 @@ func run() error {
 		return err
 	}
 
-	txnRepo := repository.NewTransactionRepository(db)
-	accRepo := repository.NewAccountRepository(store.NewMemStore())
-	txnSvc := service.NewTransactionService(txnRepo, accRepo)
-	accSvc := service.NewAccountService(accRepo)
+	// txnRepo := repository.NewTransactionRepository(db)
+	// accRepo := repository.NewAccountRepository(store.NewMemStore())
+	txnSvc := service.NewTransactionService(db, db)
+	accSvc := service.NewAccountService(db)
 	txnHandler := rest.NewTransactionHandler(txnSvc)
 	accHandler := rest.NewAccountHandler(accSvc)
 

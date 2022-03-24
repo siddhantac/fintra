@@ -20,7 +20,7 @@ func (s *AccountService) NewAccount(name string, startingBalance int) (*model.Ac
 		return nil, fmt.Errorf("validation failed: %w", err)
 	}
 
-	if err := s.accRepo.Insert(acc); err != nil {
+	if err := s.accRepo.InsertAccount(acc.Name(), acc); err != nil {
 		return nil, fmt.Errorf("repository insert failed: %w", err)
 	}
 
@@ -28,11 +28,11 @@ func (s *AccountService) NewAccount(name string, startingBalance int) (*model.Ac
 }
 
 func (s *AccountService) GetAllAccounts() ([]*model.Account, error) {
-	return s.accRepo.GetAll()
+	return nil, fmt.Errorf("not implemented")
 }
 
 func (s *AccountService) GetAccountByName(name string) (*model.Account, error) {
-	return s.accRepo.GetByName(name)
+	return s.accRepo.GetAccountByName(name)
 }
 
 func validateAccount(account *model.Account) error {

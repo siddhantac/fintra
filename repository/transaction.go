@@ -15,13 +15,13 @@ func NewTransactionRepository(storageEngine Store2) *TransactionRepository {
 }
 
 func (r *TransactionRepository) Insert(txn *model.Transaction) error {
-	r.store.Insert(txn.ID, txn)
+	r.store.InsertTransaction(txn.ID, txn)
 	return nil
 }
 
 func (r *TransactionRepository) GetByID(id string) (*model.Transaction, error) {
 	var txn model.Transaction
-	err := r.store.GetByID2(id, &txn)
+	err := r.store.GetTransactionByID(id, &txn)
 	if err != nil {
 		return nil, err
 	}
