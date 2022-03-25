@@ -8,7 +8,7 @@ build:
 	go build -o ./bin/fintra ./cmd
 
 run: build
-	./bin/fintra
+	DB_NAME=fintra.db ./bin/fintra
 
 generate:
 	go generate ./...

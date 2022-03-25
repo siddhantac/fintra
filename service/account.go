@@ -20,7 +20,7 @@ func (s *AccountService) NewAccount(name string, startingBalance int) (*model.Ac
 		return nil, fmt.Errorf("validation failed: %w", err)
 	}
 
-	if err := s.accRepo.InsertAccount(acc.Name(), acc); err != nil {
+	if err := s.accRepo.InsertAccount(acc.Name, acc); err != nil {
 		return nil, fmt.Errorf("repository insert failed: %w", err)
 	}
 
@@ -36,7 +36,7 @@ func (s *AccountService) GetAccountByName(name string) (*model.Account, error) {
 }
 
 func validateAccount(account *model.Account) error {
-	if account.Name() == "" {
+	if account.Name == "" {
 		return model.ErrEmpty("name")
 	}
 	return nil

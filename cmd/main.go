@@ -26,7 +26,7 @@ func main() {
 }
 
 func run() error {
-	db, err := db.New()
+	db, err := getDB()
 	if err != nil {
 		return err
 	}
@@ -87,4 +87,13 @@ func startServer(wg *sync.WaitGroup, r http.Handler) *http.Server {
 	}()
 
 	return srv
+}
+
+func getDB() (*db.BoltDB, error) {
+	dbname := os.Getenv("DB_NAME")
+	if dbname == "" {
+		dbname = "fintra.db"
+	}
+
+	return db.New(dbname)
 }

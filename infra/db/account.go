@@ -8,7 +8,7 @@ import (
 )
 
 func (b *BoltDB) GetAccountByName(name string) (*model.Account, error) {
-	object := b.get([]byte(name), bucketTransactions)
+	object := b.get([]byte(name), bucketAccounts)
 	if object == nil {
 		return nil, model.ErrNotFound
 	}
@@ -24,7 +24,7 @@ func (b *BoltDB) InsertAccount(name string, account *model.Account) error {
 		return fmt.Errorf("json marshal: %w", err)
 	}
 
-	err = b.put(bucketTransactions, []byte(name), j)
+	err = b.put(bucketAccounts, []byte(name), j)
 	return err
 }
 
