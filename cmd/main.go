@@ -33,8 +33,8 @@ func run() error {
 
 	// txnRepo := repository.NewTransactionRepository(db)
 	// accRepo := repository.NewAccountRepository(store.NewMemStore())
-	txnSvc := service.NewTransactionService(db, db)
 	accSvc := service.NewAccountService(db)
+	txnSvc := service.NewTransactionService(db, accSvc)
 	txnHandler := rest.NewTransactionHandler(txnSvc)
 	accHandler := rest.NewAccountHandler(accSvc)
 

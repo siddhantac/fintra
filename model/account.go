@@ -22,12 +22,10 @@ func NewAccount(name string, startingBalance int) *Account {
 	}
 }
 
-/* func (a *Account) Credit(amount int) int {
-	a.currentBalance += amount
-	return a.CurrentBalance()
+func (a *Account) Credit(amount int) {
+	a.CurrentBalance += amount
 }
 
-func (a *Account) Debit(amount int) int {
-	a.currentBalance -= amount
-	return a.CurrentBalance()
-} */
+func (a *Account) Debit(amount int) {
+	a.CurrentBalance -= amount
+}

@@ -23,6 +23,7 @@ func NewRoundedTime(t time.Time) RoundedTime {
 type TransactionService struct {
 	txnRepo TransactionRepository
 	accRepo AccountRepository
+	accSvc  *AccountService
 }
 
 type TransactionRepository interface {
@@ -31,16 +32,10 @@ type TransactionRepository interface {
 	GetAllTransactions() ([]*model.Transaction, error)
 }
 
-type AccountRepository interface {
-	GetAllAccounts() ([]*model.Account, error)
-	InsertAccount(name string, txn *model.Account) error
-	GetAccountByName(name string) (*model.Account, error)
-}
-
-func NewTransactionService(txnRepo TransactionRepository, accRepo AccountRepository) *TransactionService {
+func NewTransactionService(txnRepo TransactionRepository, accService *AccountService) *TransactionService {
 	return &TransactionService{
 		txnRepo: txnRepo,
-		accRepo: accRepo,
+		accSvc:  accService,
 	}
 }
 
@@ -64,14 +59,18 @@ func (s *TransactionService) NewTransaction(amount float64, isDebit bool, date, 
 		return nil, err
 	}
 
-	if _, err = s.accRepo.GetAccountByName(transaction.Account); err != nil {
+	acc, err := s.accSvc.GetAccountByName(transaction.Account)
+	if err != nil {
 		return nil, fmt.Errorf("error in account %s: %w", transaction.Account, err)
 	}
 
 	if err := s.txnRepo.InsertTransaction(transaction.ID, transaction); err != nil {
 		return nil, fmt.Errorf("repo.Insert: %w", err)
 	}
-	// TODO update account balance
+
+	if _, err := s.accSvc.UpdateAccountBalance(acc.Name, transaction); err != nil {
+		return nil, fmt.Errorf("accountService.updateAccountBalance: %w", err)
+	}
 
 	return transaction, nil
 }
