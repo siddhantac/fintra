@@ -23,21 +23,19 @@ func New() (*BoltDB, error) {
 		return nil, err
 	}
 
-	err = db.Update(func(tx *bolt.Tx) error {
-		if _, err := tx.CreateBucketIfNotExists([]byte("testbucket")); err != nil {
-			return fmt.Errorf("failed to open bucket: %w", err)
-		}
-		return nil
-	})
+	if err := createBucket(db, bucketAccounts); err != nil {
+		return nil, fmt.Errorf("failed to create bucket '%s': %w", bucketAccounts, err)
+	}
+	if err := createBucket(db, bucketTransactions); err != nil {
+		return nil, fmt.Errorf("failed to create bucket '%s': %w", bucketTransactions, err)
+	}
 
 	if err != nil {
 		db.Close()
 		return nil, err
 	}
 
-	return &BoltDB{
-		DB: db,
-	}, nil
+	return &BoltDB{DB: db}, nil
 }
 
 func (b *BoltDB) Count() int {
@@ -83,4 +81,28 @@ func (b *BoltDB) get(key, bucket []byte) []byte {
 		return nil
 	})
 	return obj
+}
+
+func (b *BoltDB) getAll(bucket []byte) ([][]byte, error) {
+	items := make([][]byte, 0)
+
+	err := b.DB.View(func(tx *bolt.Tx) error {
+		c := tx.Bucket(bucketTransactions).Cursor()
+
+		for k, item := c.First(); k != nil; k, item = c.Next() {
+			items = append(items, item)
+		}
+		return nil
+	})
+
+	return items, err
+}
+
+func createBucket(db *bolt.DB, bucket []byte) error {
+	return db.Update(func(tx *bolt.Tx) error {
+		if _, err := tx.CreateBucketIfNotExists(bucket); err != nil {
+			return err
+		}
+		return nil
+	})
 }

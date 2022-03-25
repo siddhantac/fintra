@@ -49,8 +49,13 @@ An expense manager application with zero-based budgeting.
 -   - [x] add logs
 - [ ] repository layer
     - [x] transactions repo
+      - [x] GET 
+      - [x] Create
+      - [ ] Delete
     - [x] account repo (cols: txn id, txn amt, running balance)
-      - [x] GET methods only
+      - [x] GET 
+      - [x] Create
+      - [ ] Delete
     - [ ] categories repo (required by "assign budget per category")
       - [ ] GET methods. (POST method to create can be done later)
 

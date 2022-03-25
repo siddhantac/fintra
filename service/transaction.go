@@ -28,11 +28,11 @@ type TransactionService struct {
 type TransactionRepository interface {
 	InsertTransaction(id string, txn *model.Transaction) error
 	GetTransactionByID(id string) (*model.Transaction, error)
-	// GetAll() ([]*model.Transaction, error)
+	GetAllTransactions() ([]*model.Transaction, error)
 }
 
 type AccountRepository interface {
-	// GetAll() ([]*model.Account, error)
+	GetAllAccounts() ([]*model.Account, error)
 	InsertAccount(name string, txn *model.Account) error
 	GetAccountByName(name string) (*model.Account, error)
 }
@@ -49,7 +49,7 @@ func (s *TransactionService) GetTransaction(id string) (*model.Transaction, erro
 }
 
 func (s *TransactionService) GetAllTransactions() ([]*model.Transaction, error) {
-	return nil, fmt.Errorf("not implemented")
+	return s.txnRepo.GetAllTransactions()
 }
 
 func (s *TransactionService) NewTransaction(amount float64, isDebit bool, date, category, transactionType, description, account string) (*model.Transaction, error) {

@@ -13,9 +13,9 @@ func (b *BoltDB) GetTransactionByID(id string) (*model.Transaction, error) {
 		return nil, model.ErrNotFound
 	}
 
-	var txn *model.Transaction
-	err := json.Unmarshal(object, txn)
-	return txn, err
+	var txn model.Transaction
+	err := json.Unmarshal(object, &txn)
+	return &txn, err
 }
 
 func (b *BoltDB) InsertTransaction(id string, txn *model.Transaction) error {
@@ -26,4 +26,23 @@ func (b *BoltDB) InsertTransaction(id string, txn *model.Transaction) error {
 
 	err = b.put(bucketTransactions, []byte(id), j)
 	return err
+}
+
+func (b *BoltDB) GetAllTransactions() ([]*model.Transaction, error) {
+	var txns []*model.Transaction
+
+	items, err := b.getAll(bucketTransactions)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, item := range items {
+		var txn model.Transaction
+		if err := json.Unmarshal(item, &txn); err != nil {
+			return nil, err
+		}
+		txns = append(txns, &txn)
+	}
+
+	return txns, err
 }

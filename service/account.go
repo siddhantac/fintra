@@ -28,7 +28,7 @@ func (s *AccountService) NewAccount(name string, startingBalance int) (*model.Ac
 }
 
 func (s *AccountService) GetAllAccounts() ([]*model.Account, error) {
-	return nil, fmt.Errorf("not implemented")
+	return s.accRepo.GetAllAccounts()
 }
 
 func (s *AccountService) GetAccountByName(name string) (*model.Account, error) {
