@@ -93,7 +93,7 @@ func TestBasicFlow(t *testing.T) {
 		t.Logf("calling %s", url)
 
 		// create another transaction
-		reqBody := strings.NewReader(`{"amount": 13.5, "description": "Tasty Restaurant", "category": "meals", "date": "2021-12-23", "type": "expense", "is_debit": true, "account": "AwesomeBank"}`)
+		reqBody := strings.NewReader(`{"amount": 28.41, "description": "Tasty Restaurant", "category": "meals", "date": "2021-12-23", "type": "expense", "is_debit": true, "account": "AwesomeBank"}`)
 		resp, err := http.Post(url, "application/json", reqBody)
 		require.NoError(t, err)
 		if !assert.Equal(t, http.StatusCreated, resp.StatusCode) {
@@ -117,8 +117,10 @@ func TestBasicFlow(t *testing.T) {
 
 		m0 := m[0].(map[string]interface{})
 		m1 := m[1].(map[string]interface{})
-		isEqualTransactionResponse(t, newTransactionResponse(), m0, "id")
 		isEqualTransactionResponse(t, newTransactionResponse(), m1, "id")
+		isEqualTransactionResponse(t, newTransactionResponse(func(txn map[string]interface{}) {
+			txn["amount"] = 28.41
+		}), m0, "id")
 	})
 
 	t.Run("check account balance was updated", func(t *testing.T) {
@@ -135,7 +137,8 @@ func TestBasicFlow(t *testing.T) {
 
 		expected := `{
 			"name": "AwesomeBank",
-			"balance": 300
+			"starting_balance": 400,
+			"current_balance": 358.09
 		}`
 		// var m map[string]interface{}
 		// err = json.Unmarshal(body, &m)
@@ -155,8 +158,8 @@ func isEqualTransactionResponse(t *testing.T, expected, got map[string]interface
 	require.Equal(t, expected, got)
 }
 
-func newTransactionResponse() map[string]interface{} {
-	return map[string]interface{}{
+func newTransactionResponse(modifiers ...func(m map[string]interface{})) map[string]interface{} {
+	m := map[string]interface{}{
 		"account":     "AwesomeBank",
 		"amount":      13.50,
 		"category":    "meals",
@@ -166,4 +169,9 @@ func newTransactionResponse() map[string]interface{} {
 		"is_debit":    true,
 		"type":        "expense",
 	}
+
+	for _, modifier := range modifiers {
+		modifier(m)
+	}
+	return m
 }

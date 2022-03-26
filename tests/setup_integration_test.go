@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	baseURL = "http://localhost:8090"
+	baseURL = "http://localhost:8080"
 	dbName  = "fintra.test.db"
 )
 
@@ -24,6 +24,7 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 
+	os.Remove(binPath)
 	os.Remove(dbName)
 
 	binPath := filepath.Join(currDir, "api.test")
@@ -40,6 +41,8 @@ func TestMain(m *testing.M) {
 
 	if err := healthcheck(); err != nil {
 		fmt.Println("healthcheck failed:", err)
+		os.Remove(binPath)
+		os.Remove(dbName)
 		os.Exit(1)
 	}
 
