@@ -23,33 +23,28 @@ func NewRoundedTime(t time.Time) RoundedTime {
 type TransactionService struct {
 	txnRepo TransactionRepository
 	accRepo AccountRepository
+	accSvc  *AccountService
 }
 
 type TransactionRepository interface {
-	Insert(*model.Transaction) error
-	GetByID(string) (*model.Transaction, error)
-	GetAll() ([]*model.Transaction, error)
+	InsertTransaction(id string, txn *model.Transaction) error
+	GetTransactionByID(id string) (*model.Transaction, error)
+	GetAllTransactions() ([]*model.Transaction, error)
 }
 
-type AccountRepository interface {
-	GetAll() ([]*model.Account, error)
-	GetByName(string) (*model.Account, error)
-	Insert(*model.Account) error
-}
-
-func NewTransactionService(txnRepo TransactionRepository, accRepo AccountRepository) *TransactionService {
+func NewTransactionService(txnRepo TransactionRepository, accService *AccountService) *TransactionService {
 	return &TransactionService{
 		txnRepo: txnRepo,
-		accRepo: accRepo,
+		accSvc:  accService,
 	}
 }
 
 func (s *TransactionService) GetTransaction(id string) (*model.Transaction, error) {
-	return s.txnRepo.GetByID(id)
+	return s.txnRepo.GetTransactionByID(id)
 }
 
 func (s *TransactionService) GetAllTransactions() ([]*model.Transaction, error) {
-	return s.txnRepo.GetAll()
+	return s.txnRepo.GetAllTransactions()
 }
 
 func (s *TransactionService) NewTransaction(amount float64, isDebit bool, date, category, transactionType, description, account string) (*model.Transaction, error) {
@@ -64,14 +59,18 @@ func (s *TransactionService) NewTransaction(amount float64, isDebit bool, date, 
 		return nil, err
 	}
 
-	if _, err = s.accRepo.GetByName(transaction.Account); err != nil {
+	acc, err := s.accSvc.GetAccountByName(transaction.Account)
+	if err != nil {
 		return nil, fmt.Errorf("error in account %s: %w", transaction.Account, err)
 	}
 
-	if err := s.txnRepo.Insert(transaction); err != nil {
+	if err := s.txnRepo.InsertTransaction(transaction.ID, transaction); err != nil {
 		return nil, fmt.Errorf("repo.Insert: %w", err)
 	}
-	// TODO update account balance
+
+	if _, err := s.accSvc.UpdateAccountBalance(acc.Name, transaction); err != nil {
+		return nil, fmt.Errorf("accountService.updateAccountBalance: %w", err)
+	}
 
 	return transaction, nil
 }

@@ -20,7 +20,7 @@ func TestNewAccount(t *testing.T) {
 			name:            "AwesomeBank",
 			startingBalance: 1200,
 			accRepo: &AccountRepositoryMock{
-				InsertFunc: func(_ *model.Account) error {
+				InsertAccountFunc: func(_ string, _ *model.Account) error {
 					return nil
 				},
 			},
@@ -34,7 +34,7 @@ func TestNewAccount(t *testing.T) {
 				require.NoError(t, err)
 			},
 			verifyRepoCalls: func(t *testing.T, accRepo *AccountRepositoryMock) {
-				require.Len(t, accRepo.InsertCalls(), 1)
+				require.Len(t, accRepo.InsertAccountCalls(), 1)
 			},
 		},
 	}

@@ -13,13 +13,18 @@ import (
 	"time"
 )
 
-const baseURL = "http://localhost:8080"
+const (
+	baseURL = "http://localhost:8090"
+	dbName  = "fintra.test.db"
+)
 
 func TestMain(m *testing.M) {
 	currDir, err := os.Getwd()
 	if err != nil {
 		os.Exit(1)
 	}
+
+	os.Remove(dbName)
 
 	binPath := filepath.Join(currDir, "api.test")
 
@@ -43,6 +48,7 @@ func TestMain(m *testing.M) {
 
 	cancel()
 	os.Remove(binPath)
+	os.Remove(dbName)
 }
 
 func buildApp(binPath string) error {
@@ -57,6 +63,7 @@ func buildApp(binPath string) error {
 }
 
 func startApp(ctx context.Context, appPath string) error {
+	os.Setenv("DB_NAME", dbName)
 	cmd := exec.CommandContext(ctx, appPath, "-port", "8080")
 
 	if out, err := cmd.CombinedOutput(); err != nil {

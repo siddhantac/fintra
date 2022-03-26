@@ -15,8 +15,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 
 	"github.com/siddhantac/fintra/http/rest"
-	"github.com/siddhantac/fintra/infra/store"
-	"github.com/siddhantac/fintra/repository"
+	"github.com/siddhantac/fintra/infra/db"
 	"github.com/siddhantac/fintra/service"
 )
 
@@ -35,10 +34,15 @@ func run() error {
 	flag.StringVar(&port, "port", "8090", "port on which server will run")
 	flag.Parse()
 
-	txnRepo := repository.NewTransactionRepository(store.NewMemStore())
-	accRepo := repository.NewAccountRepository(store.NewMemStore())
-	txnSvc := service.NewTransactionService(txnRepo, accRepo)
-	accSvc := service.NewAccountService(accRepo)
+	db, err := getDB()
+	if err != nil {
+		return err
+	}
+
+	// txnRepo := repository.NewTransactionRepository(db)
+	// accRepo := repository.NewAccountRepository(store.NewMemStore())
+	accSvc := service.NewAccountService(db)
+	txnSvc := service.NewTransactionService(db, accSvc)
 	txnHandler := rest.NewTransactionHandler(txnSvc)
 	accHandler := rest.NewAccountHandler(accSvc)
 
@@ -91,4 +95,13 @@ func startServer(wg *sync.WaitGroup, r http.Handler, port string) *http.Server {
 	}()
 
 	return srv
+}
+
+func getDB() (*db.BoltDB, error) {
+	dbname := os.Getenv("DB_NAME")
+	if dbname == "" {
+		dbname = "fintra.db"
+	}
+
+	return db.New(dbname)
 }

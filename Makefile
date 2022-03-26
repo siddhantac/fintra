@@ -5,10 +5,10 @@ test-integration:
 	go test -tags integration ./tests
 
 build:
-	go build -o fintra ./cmd
+	go build -o ./bin/fintra ./cmd
 
-run: 
-	go run ./cmd/main.go -port 8090
+run: build
+	DB_NAME=fintra.db ./bin/fintra
 
 generate:
 	go generate ./...
