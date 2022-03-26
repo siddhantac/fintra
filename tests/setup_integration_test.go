@@ -39,7 +39,7 @@ func TestMain(m *testing.M) {
 	}()
 
 	if err := healthcheck(); err != nil {
-		fmt.Println(err)
+		fmt.Println("healthcheck failed:", err)
 		os.Exit(1)
 	}
 

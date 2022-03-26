@@ -56,7 +56,7 @@ func (s *AccountService) UpdateAccountBalance(name string, txn *model.Transactio
 
 	updatedAccount, err := s.accRepo.UpdateAccount(acc.Name, acc)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("accountRepository.UpdateAccount: %w", err)
 	}
 
 	return updatedAccount, nil

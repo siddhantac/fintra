@@ -22,7 +22,6 @@ func NewRoundedTime(t time.Time) RoundedTime {
 
 type TransactionService struct {
 	txnRepo TransactionRepository
-	accRepo AccountRepository
 	accSvc  *AccountService
 }
 

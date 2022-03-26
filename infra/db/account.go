@@ -48,5 +48,10 @@ func (b *BoltDB) GetAllAccounts() ([]*model.Account, error) {
 }
 
 func (b *BoltDB) UpdateAccount(name string, update *model.Account) (*model.Account, error) {
-	return nil, fmt.Errorf("not implemented")
+	_, err := b.GetAccountByName(name)
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, b.InsertAccount(name, update)
 }

@@ -120,6 +120,28 @@ func TestBasicFlow(t *testing.T) {
 		isEqualTransactionResponse(t, newTransactionResponse(), m0, "id")
 		isEqualTransactionResponse(t, newTransactionResponse(), m1, "id")
 	})
+
+	t.Run("check account balance was updated", func(t *testing.T) {
+		accountName := "AwesomeBank"
+		url := baseURL + "/accounts/" + accountName
+		t.Logf("calling %s", url)
+
+		resp, err := http.Get(url)
+		require.NoError(t, err)
+
+		body, err := ioutil.ReadAll(resp.Body)
+		require.NoError(t, err)
+		require.Equal(t, http.StatusOK, resp.StatusCode)
+
+		expected := `{
+			"name": "AwesomeBank",
+			"balance": 300
+		}`
+		// var m map[string]interface{}
+		// err = json.Unmarshal(body, &m)
+		// require.NoError(t, err)
+		require.JSONEq(t, expected, string(body))
+	})
 }
 
 func isEqualTransactionResponse(t *testing.T, expected, got map[string]interface{}, ignoreFields ...string) {
