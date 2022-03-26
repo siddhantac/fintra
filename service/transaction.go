@@ -8,6 +8,7 @@ import (
 
 	"github.com/siddhantac/fintra/infra/uid"
 	"github.com/siddhantac/fintra/model"
+	"github.com/siddhantac/fintra/money"
 )
 
 const (
@@ -22,7 +23,6 @@ func NewRoundedTime(t time.Time) RoundedTime {
 
 type TransactionService struct {
 	txnRepo TransactionRepository
-	accRepo AccountRepository
 	accSvc  *AccountService
 }
 
@@ -47,13 +47,13 @@ func (s *TransactionService) GetAllTransactions() ([]*model.Transaction, error) 
 	return s.txnRepo.GetAllTransactions()
 }
 
-func (s *TransactionService) NewTransaction(amount float64, isDebit bool, date, category, transactionType, description, account string) (*model.Transaction, error) {
+func (s *TransactionService) NewTransaction(amount float32, isDebit bool, date, category, transactionType, description, account string) (*model.Transaction, error) {
 	d, err := time.Parse(dateLayout, date)
 	if err != nil {
 		return nil, fmt.Errorf("invalid date: %w", err)
 	}
 
-	transaction := model.NewTransaction(uid.NewID(), amount, d, isDebit, category, transactionType, description, account)
+	transaction := model.NewTransaction(uid.NewID(), money.NewMoney(amount), d, isDebit, category, transactionType, description, account)
 
 	if err := validateTransaction(*transaction); err != nil {
 		return nil, err

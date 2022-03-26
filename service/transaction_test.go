@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/siddhantac/fintra/model"
+	"github.com/siddhantac/fintra/money"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -52,8 +53,7 @@ func TestNewTransaction(t *testing.T) {
 	)
 	assert.NoError(t, err)
 	expectedTxn := &model.Transaction{
-		IntAmount:   1200,
-		Amount:      12,
+		Amount:      money.NewMoney(12),
 		IsDebit:     true,
 		Date:        time.Date(2021, time.October, 11, 0, 0, 0, 0, time.UTC),
 		Category:    model.TrCategoryEntertainment,
@@ -84,7 +84,7 @@ func TestTransactionValidation(t *testing.T) {
 			txn: model.Transaction{
 				Type:        model.TrTypeExpense,
 				IsDebit:     true,
-				Amount:      10,
+				Amount:      money.NewMoney(10),
 				Currency:    "SGD",
 				Description: "some description",
 				Date:        time.Now(),
@@ -97,7 +97,7 @@ func TestTransactionValidation(t *testing.T) {
 			txn: model.Transaction{
 				Type:        "",
 				IsDebit:     true,
-				Amount:      10,
+				Amount:      money.NewMoney(10),
 				Currency:    "SGD",
 				Description: "some description",
 				Date:        time.Now(),
@@ -110,7 +110,7 @@ func TestTransactionValidation(t *testing.T) {
 			txn: model.Transaction{
 				Type:        "Loan",
 				IsDebit:     true,
-				Amount:      10,
+				Amount:      money.NewMoney(10),
 				Currency:    "SGD",
 				Description: "some description",
 				Date:        time.Now(),
@@ -123,7 +123,7 @@ func TestTransactionValidation(t *testing.T) {
 			txn: model.Transaction{
 				Type:        "expense",
 				IsDebit:     true,
-				Amount:      10,
+				Amount:      money.NewMoney(10),
 				Currency:    "",
 				Description: "some description",
 				Date:        time.Now(),
@@ -136,7 +136,7 @@ func TestTransactionValidation(t *testing.T) {
 			txn: model.Transaction{
 				Type:        "expense",
 				IsDebit:     true,
-				Amount:      10,
+				Amount:      money.NewMoney(10),
 				Currency:    "SGD",
 				Description: "some description",
 				Date:        time.Time{},
@@ -149,7 +149,7 @@ func TestTransactionValidation(t *testing.T) {
 			txn: model.Transaction{
 				Type:        "expense",
 				IsDebit:     true,
-				Amount:      10,
+				Amount:      money.NewMoney(10),
 				Currency:    "SGD",
 				Description: "some description",
 				Date:        time.Now(),
@@ -162,7 +162,7 @@ func TestTransactionValidation(t *testing.T) {
 			txn: model.Transaction{
 				Type:        "expense",
 				IsDebit:     true,
-				Amount:      10,
+				Amount:      money.NewMoney(10),
 				Currency:    "SGD",
 				Description: "some description",
 				Date:        time.Now(),

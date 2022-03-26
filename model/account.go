@@ -1,17 +1,21 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	"github.com/siddhantac/fintra/money"
+)
 
 type Account struct {
 	Created time.Time
 	Updated time.Time
 
 	Name            string
-	StartingBalance int
-	CurrentBalance  int
+	StartingBalance money.Money
+	CurrentBalance  money.Money
 }
 
-func NewAccount(name string, startingBalance int) *Account {
+func NewAccount(name string, startingBalance money.Money) *Account {
 	now := time.Now()
 	return &Account{
 		Name:            name,
@@ -22,10 +26,10 @@ func NewAccount(name string, startingBalance int) *Account {
 	}
 }
 
-func (a *Account) Credit(amount int) {
-	a.CurrentBalance += amount
+func (a *Account) Credit(amount money.Money) {
+	a.CurrentBalance = a.CurrentBalance.Add(amount)
 }
 
-func (a *Account) Debit(amount int) {
-	a.CurrentBalance -= amount
+func (a *Account) Debit(amount money.Money) {
+	a.CurrentBalance = a.CurrentBalance.Subtract(amount)
 }

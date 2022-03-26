@@ -13,7 +13,7 @@ import (
 )
 
 type CreateTransactionRequest struct {
-	Amount float64 `json:"amount"`
+	Amount float32 `json:"amount"`
 	Type   string  `json:"type"`
 	// Currency    string `json:"currency"`
 	Description string `json:"description"`
@@ -25,7 +25,7 @@ type CreateTransactionRequest struct {
 
 type TransactionResponse struct {
 	ID     string  `json:"id"`
-	Amount float64 `json:"amount"`
+	Amount float32 `json:"amount"`
 	Type   string  `json:"type"`
 	// Currency    string `json:"currency"`
 	Description string `json:"description"`
@@ -54,7 +54,7 @@ type TransactionService interface {
 	GetAllTransactions() ([]*model.Transaction, error)
 	GetTransaction(id string) (*model.Transaction, error)
 	NewTransaction(
-		amount float64,
+		amount float32,
 		isDebit bool,
 		date, category, transactionType, description, account string) (*model.Transaction, error)
 }
@@ -164,7 +164,7 @@ func newErrorResponse(msg string) string {
 func newTransactionResponse(t *model.Transaction) TransactionResponse {
 	return TransactionResponse{
 		ID:     t.ID,
-		Amount: t.Amount,
+		Amount: t.Amount.Amount(),
 		Type:   string(t.Type),
 		// Currency:    string(transaction.Currency),
 		Description: t.Description,
