@@ -3,12 +3,13 @@ package model
 import (
 	"fmt"
 	"time"
+
+	"github.com/siddhantac/fintra/money"
 )
 
 type Transaction struct {
-	IntAmount   int
-	Amount      float64
 	ID          string
+	Amount      money.Money
 	Type        TransactionType
 	Currency    Currency
 	Description string
@@ -20,10 +21,9 @@ type Transaction struct {
 	Updated     time.Time
 }
 
-func NewTransaction(id string, amount float64, date time.Time, isDebit bool, category, transactionType, description, account string) *Transaction {
+func NewTransaction(id string, amount money.Money, date time.Time, isDebit bool, category, transactionType, description, account string) *Transaction {
 	now := time.Now()
 	return &Transaction{
-		IntAmount:   int(amount * 100),
 		Amount:      amount,
 		ID:          id,
 		Type:        TransactionType(transactionType),
@@ -38,7 +38,7 @@ func NewTransaction(id string, amount float64, date time.Time, isDebit bool, cat
 }
 
 func (t *Transaction) String() string {
-	return fmt.Sprintf("%s\t%-10s\t%0.2f\t%s\t%s(%s)", t.Date.Format("02 Jan 2006"), t.Description, t.Amount, t.Account, t.Category, t.Type)
+	return fmt.Sprintf("%s\t%-10s\t%v\t%s\t%s(%s)", t.Date.Format("02 Jan 2006"), t.Description, t.Amount, t.Account, t.Category, t.Type)
 
 }
 

@@ -5,12 +5,13 @@ import (
 
 	"github.com/siddhantac/fintra/infra/store"
 	"github.com/siddhantac/fintra/model"
+	"github.com/siddhantac/fintra/money"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGetAccountDetails(t *testing.T) {
 	storage := store.NewMemStore()
-	expectedAcc := model.NewAccount("Citibank", 150)
+	expectedAcc := model.NewAccount("Citibank", money.NewMoney(150))
 	// expectedAcc := &model.Account{
 	// 	ID:              "FakeBankAccount",
 	// 	Balance:         150,

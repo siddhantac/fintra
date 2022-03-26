@@ -11,14 +11,14 @@ import (
 )
 
 type createAccountRequest struct {
-	Name            string `json:"name"`
-	StartingBalance int    `json:"starting_balance"`
+	Name            string  `json:"name"`
+	StartingBalance float32 `json:"starting_balance"`
 }
 
 type createAccountResponse struct {
-	Name            string `json:"name"`
-	StartingBalance int    `json:"starting_balance"`
-	CurrentBalance  int    `json:"current_balance"`
+	Name            string  `json:"name"`
+	StartingBalance float32 `json:"starting_balance"`
+	CurrentBalance  float32 `json:"current_balance"`
 }
 
 type AccountHandler struct {
@@ -26,7 +26,7 @@ type AccountHandler struct {
 }
 
 type AccountService interface {
-	NewAccount(name string, startingBalance int) (*model.Account, error)
+	NewAccount(name string, startingBalance float32) (*model.Account, error)
 	GetAllAccounts() ([]*model.Account, error)
 	GetAccountByName(name string) (*model.Account, error)
 }
@@ -98,7 +98,7 @@ func (h *AccountHandler) GetAccountByName(w http.ResponseWriter, r *http.Request
 func newAccountResponse(account *model.Account) createAccountResponse {
 	return createAccountResponse{
 		Name:            account.Name,
-		StartingBalance: account.StartingBalance,
-		CurrentBalance:  account.CurrentBalance,
+		StartingBalance: account.StartingBalance.Amount(),
+		CurrentBalance:  account.CurrentBalance.Amount(),
 	}
 }
