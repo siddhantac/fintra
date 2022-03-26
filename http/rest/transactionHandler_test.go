@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/siddhantac/fintra/model"
+	"github.com/siddhantac/fintra/money"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -53,8 +54,7 @@ func TestGetAllTransactions(t *testing.T) {
 					return []*model.Transaction{
 						{
 							ID:          "1",
-							Amount:      23,
-							IntAmount:   2300,
+							Amount:      money.NewMoney(23),
 							Type:        "expense",
 							Description: "dinner",
 							Date:        time.Date(2021, 8, 17, 0, 0, 0, 0, &time.Location{}),
@@ -64,8 +64,7 @@ func TestGetAllTransactions(t *testing.T) {
 						},
 						{
 							ID:          "2",
-							Amount:      99.5,
-							IntAmount:   9950,
+							Amount:      money.NewMoney(99.5),
 							Type:        "expense",
 							Description: "mrt",
 							Date:        time.Date(2021, 8, 20, 0, 0, 0, 0, &time.Location{}),
@@ -115,7 +114,7 @@ func TestGetTransactionByID(t *testing.T) {
 				GetTransactionFunc: func(id string) (*model.Transaction, error) {
 					return &model.Transaction{
 						ID:          "1",
-						Amount:      23,
+						Amount:      money.NewMoney(23),
 						Type:        "expense",
 						Description: "dinner",
 						Date:        time.Date(2021, 8, 17, 0, 0, 0, 0, &time.Location{}),
@@ -202,9 +201,9 @@ func TestCreateTransaction(t *testing.T) {
 			w := httptest.NewRecorder()
 
 			mockSvc := &TransactionServiceMock{
-				NewTransactionFunc: func(amount float64, isDebit bool, date, category, transactionType, description, account string) (*model.Transaction, error) {
+				NewTransactionFunc: func(amount float32, isDebit bool, date, category, transactionType, description, account string) (*model.Transaction, error) {
 					d := time.Date(2021, 8, 17, 0, 0, 0, 0, time.UTC)
-					return model.NewTransaction("1", amount, d, isDebit, category, transactionType, description, account), nil
+					return model.NewTransaction("1", money.NewMoney(amount), d, isDebit, category, transactionType, description, account), nil
 				},
 			}
 			handler := NewTransactionHandler(mockSvc)

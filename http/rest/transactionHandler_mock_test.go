@@ -24,7 +24,7 @@ var _ TransactionService = &TransactionServiceMock{}
 // 			GetTransactionFunc: func(id string) (*model.Transaction, error) {
 // 				panic("mock out the GetTransaction method")
 // 			},
-// 			NewTransactionFunc: func(amount float64, isDebit bool, date string, category string, transactionType string, description string, account string) (*model.Transaction, error) {
+// 			NewTransactionFunc: func(amount float32, isDebit bool, date string, category string, transactionType string, description string, account string) (*model.Transaction, error) {
 // 				panic("mock out the NewTransaction method")
 // 			},
 // 		}
@@ -41,7 +41,7 @@ type TransactionServiceMock struct {
 	GetTransactionFunc func(id string) (*model.Transaction, error)
 
 	// NewTransactionFunc mocks the NewTransaction method.
-	NewTransactionFunc func(amount float64, isDebit bool, date string, category string, transactionType string, description string, account string) (*model.Transaction, error)
+	NewTransactionFunc func(amount float32, isDebit bool, date string, category string, transactionType string, description string, account string) (*model.Transaction, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -56,7 +56,7 @@ type TransactionServiceMock struct {
 		// NewTransaction holds details about calls to the NewTransaction method.
 		NewTransaction []struct {
 			// Amount is the amount argument value.
-			Amount float64
+			Amount float32
 			// IsDebit is the isDebit argument value.
 			IsDebit bool
 			// Date is the date argument value.
@@ -134,12 +134,12 @@ func (mock *TransactionServiceMock) GetTransactionCalls() []struct {
 }
 
 // NewTransaction calls NewTransactionFunc.
-func (mock *TransactionServiceMock) NewTransaction(amount float64, isDebit bool, date string, category string, transactionType string, description string, account string) (*model.Transaction, error) {
+func (mock *TransactionServiceMock) NewTransaction(amount float32, isDebit bool, date string, category string, transactionType string, description string, account string) (*model.Transaction, error) {
 	if mock.NewTransactionFunc == nil {
 		panic("TransactionServiceMock.NewTransactionFunc: method is nil but TransactionService.NewTransaction was just called")
 	}
 	callInfo := struct {
-		Amount          float64
+		Amount          float32
 		IsDebit         bool
 		Date            string
 		Category        string
@@ -165,7 +165,7 @@ func (mock *TransactionServiceMock) NewTransaction(amount float64, isDebit bool,
 // Check the length with:
 //     len(mockedTransactionService.NewTransactionCalls())
 func (mock *TransactionServiceMock) NewTransactionCalls() []struct {
-	Amount          float64
+	Amount          float32
 	IsDebit         bool
 	Date            string
 	Category        string
@@ -174,7 +174,7 @@ func (mock *TransactionServiceMock) NewTransactionCalls() []struct {
 	Account         string
 } {
 	var calls []struct {
-		Amount          float64
+		Amount          float32
 		IsDebit         bool
 		Date            string
 		Category        string

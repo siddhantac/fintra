@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/siddhantac/fintra/model"
+	"github.com/siddhantac/fintra/money"
 )
 
 type AccountService struct {
@@ -21,8 +22,8 @@ func NewAccountService(accountRepo AccountRepository) *AccountService {
 	return &AccountService{accRepo: accountRepo}
 }
 
-func (s *AccountService) NewAccount(name string, startingBalance int) (*model.Account, error) {
-	acc := model.NewAccount(name, startingBalance)
+func (s *AccountService) NewAccount(name string, startingBalance float32) (*model.Account, error) {
+	acc := model.NewAccount(name, money.NewMoney(startingBalance))
 	if err := validateAccount(acc); err != nil {
 		return nil, fmt.Errorf("validation failed: %w", err)
 	}
@@ -49,9 +50,9 @@ func (s *AccountService) UpdateAccountBalance(name string, txn *model.Transactio
 	}
 
 	if txn.IsDebit {
-		acc.Debit(txn.IntAmount)
+		acc.Debit(txn.Amount)
 	} else {
-		acc.Credit(txn.IntAmount)
+		acc.Credit(txn.Amount)
 	}
 
 	updatedAccount, err := s.accRepo.UpdateAccount(acc.Name, acc)
