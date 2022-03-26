@@ -32,6 +32,6 @@ func TestGetAll(t *testing.T) {
 
 	txns := ms.GetAll()
 	assert.Len(t, txns, 2)
-	assert.Equal(t, item, txns[0])
-	assert.Equal(t, city, txns[1])
+	assert.Contains(t, txns, item)
+	assert.Contains(t, txns, city)
 }

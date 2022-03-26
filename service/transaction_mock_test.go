@@ -177,6 +177,9 @@ var _ AccountRepository = &AccountRepositoryMock{}
 // 			InsertAccountFunc: func(name string, txn *model.Account) error {
 // 				panic("mock out the InsertAccount method")
 // 			},
+// 			UpdateAccountFunc: func(name string, account *model.Account) (*model.Account, error) {
+// 				panic("mock out the UpdateAccount method")
+// 			},
 // 		}
 //
 // 		// use mockedAccountRepository in code that requires AccountRepository
@@ -192,6 +195,9 @@ type AccountRepositoryMock struct {
 
 	// InsertAccountFunc mocks the InsertAccount method.
 	InsertAccountFunc func(name string, txn *model.Account) error
+
+	// UpdateAccountFunc mocks the UpdateAccount method.
+	UpdateAccountFunc func(name string, account *model.Account) (*model.Account, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -210,10 +216,18 @@ type AccountRepositoryMock struct {
 			// Txn is the txn argument value.
 			Txn *model.Account
 		}
+		// UpdateAccount holds details about calls to the UpdateAccount method.
+		UpdateAccount []struct {
+			// Name is the name argument value.
+			Name string
+			// Account is the account argument value.
+			Account *model.Account
+		}
 	}
 	lockGetAccountByName sync.RWMutex
 	lockGetAllAccounts   sync.RWMutex
 	lockInsertAccount    sync.RWMutex
+	lockUpdateAccount    sync.RWMutex
 }
 
 // GetAccountByName calls GetAccountByNameFunc.
@@ -305,5 +319,40 @@ func (mock *AccountRepositoryMock) InsertAccountCalls() []struct {
 	mock.lockInsertAccount.RLock()
 	calls = mock.calls.InsertAccount
 	mock.lockInsertAccount.RUnlock()
+	return calls
+}
+
+// UpdateAccount calls UpdateAccountFunc.
+func (mock *AccountRepositoryMock) UpdateAccount(name string, account *model.Account) (*model.Account, error) {
+	if mock.UpdateAccountFunc == nil {
+		panic("AccountRepositoryMock.UpdateAccountFunc: method is nil but AccountRepository.UpdateAccount was just called")
+	}
+	callInfo := struct {
+		Name    string
+		Account *model.Account
+	}{
+		Name:    name,
+		Account: account,
+	}
+	mock.lockUpdateAccount.Lock()
+	mock.calls.UpdateAccount = append(mock.calls.UpdateAccount, callInfo)
+	mock.lockUpdateAccount.Unlock()
+	return mock.UpdateAccountFunc(name, account)
+}
+
+// UpdateAccountCalls gets all the calls that were made to UpdateAccount.
+// Check the length with:
+//     len(mockedAccountRepository.UpdateAccountCalls())
+func (mock *AccountRepositoryMock) UpdateAccountCalls() []struct {
+	Name    string
+	Account *model.Account
+} {
+	var calls []struct {
+		Name    string
+		Account *model.Account
+	}
+	mock.lockUpdateAccount.RLock()
+	calls = mock.calls.UpdateAccount
+	mock.lockUpdateAccount.RUnlock()
 	return calls
 }

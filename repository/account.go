@@ -13,7 +13,7 @@ func NewAccountRepository(storage Store) *AccountRepo {
 }
 
 func (r *AccountRepo) Insert(account *model.Account) error {
-	r.store.Insert(account.Name(), account)
+	r.store.Insert(account.Name, account)
 	return nil
 }
 

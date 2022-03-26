@@ -26,9 +26,9 @@ func TestNewAccount(t *testing.T) {
 			},
 			verifyAccount: func(t *testing.T, acc *model.Account) {
 				require.False(t, acc.Created.IsZero())
-				require.Equal(t, "AwesomeBank", acc.Name())
-				require.Equal(t, 1200, acc.StartingBalance())
-				require.Equal(t, 1200, acc.CurrentBalance())
+				require.Equal(t, "AwesomeBank", acc.Name)
+				require.Equal(t, 1200, acc.StartingBalance)
+				require.Equal(t, 1200, acc.CurrentBalance)
 			},
 			verifyErr: func(t *testing.T, err error) {
 				require.NoError(t, err)

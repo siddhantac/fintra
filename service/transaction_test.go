@@ -31,11 +31,15 @@ func TestNewTransaction(t *testing.T) {
 	}
 	accRepo := &AccountRepositoryMock{
 		GetAccountByNameFunc: func(_ string) (*model.Account, error) {
+			return &model.Account{Name: "some acc"}, nil
+		},
+		UpdateAccountFunc: func(_ string, _ *model.Account) (*model.Account, error) {
 			return nil, nil
 		},
 	}
 
-	s := NewTransactionService(txnRepo, accRepo)
+	accSvc := NewAccountService(accRepo)
+	s := NewTransactionService(txnRepo, accSvc)
 
 	txn, err := s.NewTransaction(
 		12,
@@ -59,7 +63,8 @@ func TestNewTransaction(t *testing.T) {
 		Currency:    "sgd",
 	}
 	require.Len(t, txnRepo.InsertTransactionCalls(), 1)
-	require.Len(t, accRepo.GetAccountByNameCalls(), 1)
+	require.Len(t, accRepo.GetAccountByNameCalls(), 2)
+	require.Len(t, accRepo.UpdateAccountCalls(), 1)
 
 	// don't compare date and ID as they are non-deterministic
 	txn.Created = time.Time{}
