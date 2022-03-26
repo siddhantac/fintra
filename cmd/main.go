@@ -14,39 +14,9 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 
 	"github.com/siddhantac/fintra/http/rest"
-	"github.com/siddhantac/fintra/infra/store"
-	"github.com/siddhantac/fintra/repository"
+	"github.com/siddhantac/fintra/infra/db"
 	"github.com/siddhantac/fintra/service"
 )
-
-// func main() {
-// 	ms := store.NewMemStore()
-
-// 	tx, err := model.NewTransaction(23, time.Now(), true, string(model.TrCategoryEntertainment), string(model.TrTypeExpense), "movies", "Citibank")
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	ms.Insert(tx.ID, tx)
-
-// 	tx2, err := model.NewTransaction(11, time.Now(), true, string(model.TrCategoryMeals), string(model.TrTypeExpense), "foodpanda", "Citibank")
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	ms.Insert(tx2.ID, tx2)
-
-// 	tx3, err := model.NewTransaction(12, time.Now(), true, string(model.TrCategoryMeals), string(model.TrTypeExpense), "deliveroo", "Citibank")
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	ms.Insert(tx3.ID, tx3)
-
-// 	alltx := ms.GetAll()
-
-// 	fmt.Println("no. of txn: ", len(alltx))
-// 	for _, tx := range alltx {
-// 		fmt.Printf("%v\n", tx)
-// 	}
-// }
 
 func main() {
 	if err := run(); err != nil {
@@ -56,10 +26,15 @@ func main() {
 }
 
 func run() error {
-	txnRepo := repository.NewTransactionRepository(store.NewMemStore())
-	accRepo := repository.NewAccountRepository(store.NewMemStore())
-	txnSvc := service.NewTransactionService(txnRepo, accRepo)
-	accSvc := service.NewAccountService(accRepo)
+	db, err := getDB()
+	if err != nil {
+		return err
+	}
+
+	// txnRepo := repository.NewTransactionRepository(db)
+	// accRepo := repository.NewAccountRepository(store.NewMemStore())
+	accSvc := service.NewAccountService(db)
+	txnSvc := service.NewTransactionService(db, accSvc)
 	txnHandler := rest.NewTransactionHandler(txnSvc)
 	accHandler := rest.NewAccountHandler(accSvc)
 
@@ -112,4 +87,13 @@ func startServer(wg *sync.WaitGroup, r http.Handler) *http.Server {
 	}()
 
 	return srv
+}
+
+func getDB() (*db.BoltDB, error) {
+	dbname := os.Getenv("DB_NAME")
+	if dbname == "" {
+		dbname = "fintra.db"
+	}
+
+	return db.New(dbname)
 }

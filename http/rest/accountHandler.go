@@ -97,8 +97,8 @@ func (h *AccountHandler) GetAccountByName(w http.ResponseWriter, r *http.Request
 
 func newAccountResponse(account *model.Account) createAccountResponse {
 	return createAccountResponse{
-		Name:            account.Name(),
-		StartingBalance: account.StartingBalance(),
-		CurrentBalance:  account.CurrentBalance(),
+		Name:            account.Name,
+		StartingBalance: account.StartingBalance,
+		CurrentBalance:  account.CurrentBalance,
 	}
 }
