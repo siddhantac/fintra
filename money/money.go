@@ -42,6 +42,16 @@ func (m Money) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m.floatAmount)
 }
 
+func (m *Money) UnmarshalJSON(b []byte) error {
+	var money float32
+	err := json.Unmarshal(b, &money)
+	if err != nil {
+		return err
+	}
+	*m = NewMoney(money)
+	return nil
+}
+
 func newMoneyFromInt(amount int) Money {
 	return Money{
 		intAmount:   amount,
