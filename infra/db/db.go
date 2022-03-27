@@ -10,6 +10,7 @@ import (
 var (
 	bucketAccounts     = []byte("accounts")
 	bucketTransactions = []byte("transactions")
+	bucketCategories   = []byte("categories")
 )
 
 type BoltDB struct {
