@@ -74,7 +74,7 @@ const (
 	TrCategoryGroceries     TransactionCategory = "groceries"
 	TrCategoryHousehold     TransactionCategory = "household"
 	TrCategoryInsurance     TransactionCategory = "insurance"
-	TrCategoryMeals         TransactionCategory = "meals"
+	TrCategoryDineOut       TransactionCategory = "dine-out"
 	TrCategoryMedical       TransactionCategory = "medical"
 	TrCategoryOthers        TransactionCategory = "others"
 	TrCategoryPersonal      TransactionCategory = "personal"
@@ -85,3 +85,20 @@ const (
 	TrCategoryUtilities     TransactionCategory = "utilities"
 	TrCategoryRefund        TransactionCategory = "refund"
 )
+
+var ValidCategories map[TransactionCategory]struct{} = map[TransactionCategory]struct{}{
+	TrCategoryEntertainment: struct{}{},
+	TrCategoryGroceries:     struct{}{},
+	TrCategoryHousehold:     struct{}{},
+	TrCategoryInsurance:     struct{}{},
+	TrCategoryDineOut:       struct{}{},
+	TrCategoryMedical:       struct{}{},
+	TrCategoryOthers:        struct{}{},
+	TrCategoryPersonal:      struct{}{},
+	TrCategoryRent:          struct{}{},
+	TrCategoryTax:           struct{}{},
+	TrCategoryTransport:     struct{}{},
+	TrCategoryTravel:        struct{}{},
+	TrCategoryUtilities:     struct{}{},
+	TrCategoryRefund:        struct{}{},
+}

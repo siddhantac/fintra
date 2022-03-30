@@ -106,7 +106,7 @@ func TestTransactionValidation(t *testing.T) {
 			},
 		},
 		"invalid transaction type": {
-			expectedErr: fmt.Errorf("unknown transaction type: Loan"),
+			expectedErr: fmt.Errorf("transaction: unknown type: Loan"),
 			txn: model.Transaction{
 				Type:        "Loan",
 				IsDebit:     true,
@@ -115,6 +115,19 @@ func TestTransactionValidation(t *testing.T) {
 				Description: "some description",
 				Date:        time.Now(),
 				Category:    model.TrCategoryEntertainment,
+				Account:     "some account",
+			},
+		},
+		"invalid category type": {
+			expectedErr: fmt.Errorf("category: unknown type: dancing"),
+			txn: model.Transaction{
+				Type:        "expense",
+				IsDebit:     true,
+				Amount:      money.NewMoney(10),
+				Currency:    "SGD",
+				Description: "some description",
+				Date:        time.Now(),
+				Category:    model.TransactionCategory("dancing"),
 				Account:     "some account",
 			},
 		},

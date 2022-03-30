@@ -92,8 +92,8 @@ func validateTransaction(txn model.Transaction) error {
 		return model.ErrEmpty("date")
 	}
 
-	if txn.Category == "" {
-		return model.ErrEmpty("category")
+	if err := validateCategory(txn.Category); err != nil {
+		return err
 	}
 
 	if txn.Account == "" {
@@ -109,7 +109,7 @@ func validateType(txTyp model.TransactionType, isDebit bool) error {
 	}
 
 	if _, ok := model.TransactionTypes[txTyp]; !ok {
-		return model.ErrUnknownTransactionType(string(txTyp))
+		return fmt.Errorf("transaction: %w", model.ErrUnknownType(string(txTyp)))
 	}
 
 	switch txTyp {
@@ -122,5 +122,17 @@ func validateType(txTyp model.TransactionType, isDebit bool) error {
 			return model.ErrMustBeCredit
 		}
 	}
+	return nil
+}
+
+func validateCategory(category model.TransactionCategory) error {
+	if category == "" {
+		return model.ErrEmpty("category")
+	}
+
+	if _, ok := model.ValidCategories[category]; !ok {
+		return fmt.Errorf("category: %w", model.ErrUnknownType(string(category)))
+	}
+
 	return nil
 }

@@ -14,7 +14,7 @@ var (
 	ErrEmpty              = func(s string) error {
 		return fmt.Errorf("%s cannot be empty", s)
 	}
-	ErrUnknownTransactionType = func(s string) error {
-		return fmt.Errorf("unknown transaction type: %s", s)
+	ErrUnknownType = func(msg string) error {
+		return fmt.Errorf("unknown type: %s", msg)
 	}
 )

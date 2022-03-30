@@ -23,6 +23,7 @@ func NewCategory(name string) *Category {
 	}
 }
 
+// TODO for future use
 func (c *Category) SetBudget(budget money.Money) {
 	c.Budget = budget
 }
