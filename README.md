@@ -7,7 +7,8 @@ An expense manager application with zero-based budgeting.
 - [x] create transactions
 - [x] list transactions, get transaction by id
 - [x] account and category validation (simple hashmap based validation)
-- [ ] (WIP) data persistence using boltDB
+- [x] data persistence using boltDB
+- [ ] (WIP) home page UI
 - [ ] transfers - (2 transactions in DB)
 - [ ] report
     - [ ] filter transactions by category
