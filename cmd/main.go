@@ -14,6 +14,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
+	"github.com/siddhantac/fintra/http/app"
 	"github.com/siddhantac/fintra/http/rest"
 	"github.com/siddhantac/fintra/infra/db"
 	"github.com/siddhantac/fintra/service"
@@ -50,17 +51,25 @@ func run() error {
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-	r.Use(middleware.SetHeader("content-type", "application/json"))
-	r.Get("/healthcheck", txnHandler.HealthCheck)
-	r.Route("/transactions", func(r chi.Router) {
-		r.Post("/", txnHandler.CreateTransaction)
-		r.Get("/{txnID}", txnHandler.GetTransactionByID)
-		r.Get("/", txnHandler.GetAllTransactions)
-	})
-	r.Route("/accounts", func(r chi.Router) {
-		r.Get("/", accHandler.GetAllAccounts)
-		r.Get("/{name}", accHandler.GetAccountByName)
-		r.Post("/", accHandler.CreateAccount)
+	r.Route("/fintra", func(r chi.Router) {
+		r.Route("/app", func(r chi.Router) {
+			r.Get("/home", app.ShowHomePage)
+		})
+
+		r.Route("/api", func(r chi.Router) {
+			r.Use(middleware.SetHeader("content-type", "application/json"))
+			r.Get("/healthcheck", txnHandler.HealthCheck)
+			r.Route("/transactions", func(r chi.Router) {
+				r.Post("/", txnHandler.CreateTransaction)
+				r.Get("/{txnID}", txnHandler.GetTransactionByID)
+				r.Get("/", txnHandler.GetAllTransactions)
+			})
+			r.Route("/accounts", func(r chi.Router) {
+				r.Get("/", accHandler.GetAllAccounts)
+				r.Get("/{name}", accHandler.GetAccountByName)
+				r.Post("/", accHandler.CreateAccount)
+			})
+		})
 	})
 
 	var wg sync.WaitGroup

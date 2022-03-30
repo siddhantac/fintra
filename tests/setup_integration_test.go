@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	baseURL = "http://localhost:8080"
+	baseURL = "http://localhost:8080/fintra/api"
 	dbName  = "fintra.test.db"
 )
 
@@ -24,10 +24,10 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 
+	binPath := filepath.Join(currDir, "api.test")
+
 	os.Remove(binPath)
 	os.Remove(dbName)
-
-	binPath := filepath.Join(currDir, "api.test")
 
 	if err := buildApp(binPath); err != nil {
 		fmt.Println(err)
