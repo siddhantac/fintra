@@ -47,13 +47,18 @@ func run() error {
 	txnHandler := rest.NewTransactionHandler(txnSvc)
 	accHandler := rest.NewAccountHandler(accSvc)
 
-	log.Println("starting server...")
+	log.Printf("starting server on port %v", port)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+	r.Route("/public", func(r chi.Router) {
+		r.Get("/", app.Public)
+	})
+
 	r.Route("/fintra", func(r chi.Router) {
 		r.Route("/app", func(r chi.Router) {
-			r.Get("/home", app.ShowHomePage)
+			// r.Get("/home", app.ShowHomePage)
+			r.Get("/", app.Index().ServeHTTP)
 		})
 
 		r.Route("/api", func(r chi.Router) {
