@@ -14,10 +14,10 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
+	"github.com/siddhantac/fintra/account"
 	"github.com/siddhantac/fintra/http/app"
-	"github.com/siddhantac/fintra/http/rest"
 	"github.com/siddhantac/fintra/infra/db"
-	"github.com/siddhantac/fintra/service"
+	"github.com/siddhantac/fintra/transaction"
 )
 
 func main() {
@@ -42,10 +42,11 @@ func run() error {
 
 	// txnRepo := repository.NewTransactionRepository(db)
 	// accRepo := repository.NewAccountRepository(store.NewMemStore())
-	accSvc := service.NewAccountService(db)
-	txnSvc := service.NewTransactionService(db, accSvc)
-	txnHandler := rest.NewTransactionHandler(txnSvc)
-	accHandler := rest.NewAccountHandler(accSvc)
+	accSvc := account.NewService(db)
+	accHandler := account.NewHandler(accSvc)
+
+	txnSvc := transaction.NewService(db, accSvc)
+	txnHandler := transaction.NewHandler(txnSvc)
 
 	log.Printf("starting server on port %v", port)
 
